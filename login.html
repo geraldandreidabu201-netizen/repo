@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Login </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+  body {
+      font-family: Arial, sans-serif;
+      color:white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+canvas#bgCanvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -2;
+    background: linear-gradient(120deg,#001f3f,#000,#002f4b);
+    background-size: 300% 300%;
+    animation: bgShift 20s ease infinite;
+  }
+  @keyframes bgShift {
+    0% { background-position: 0% 50%;}
+    50% { background-position: 100% 50%;}
+    100% { background-position: 0% 50%;}
+  }
+    .login-container {
+      border: 2px solid #00fff7;
+      background: rgba(0, 0, 0, 0.75);
+      padding: 40px 50px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+
+    }
+
+
+    .logo {
+       width: 70px;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 0 10px #00fff7);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #00fff7;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(90deg, #00c3ff, #60c18f);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+     button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color:white
+    }
+
+    .footer a {
+      color: #00fff7;
+      text-decoration: none;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    .modal {
+      background: #111;
+      border-radius: 16px;
+      padding: 30px 25px;
+      max-width: 340px;
+      width: 90%;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      font-size: 15px;
+      margin: 0;
+      color: #fff;
+      animation: popUp 0.4s ease;
+    }
+
+    @keyframes popUp {
+      from {transform: scale(0.9); opacity: 0;}
+      to {transform: scale(1); opacity: 1;}
+    }
+
+    .modal h3 {
+      color: #00fff7;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .modal button {
+      background-color: #60c18f;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .modal button:hover {
+      background: #00c3ff;
+      transform: scale(1.05);
+    }
+    
+
+  @media (max-width: 360px) {
+  .login-container {
+position: relative;
+  }
+
+#showPassword
+{
+  position: relative;
+  right:90px;
+}
+
+
+  * {
+  box-sizing: border-box;
+}
+
+  html, body {
+    overflow-x: hidden;
+  }
+
+}
+
+@media (min-width: 361px) and (max-width: 424px) {
+  .login-container {
+position: relative;
+
+  }
+  * {
+  box-sizing: border-box;
+}
+
+  html, body {
+    overflow-x: hidden;
+  }
+
+  #showPassword
+{
+  position: relative;
+  right:65px;
+}
+
+  
+}
+
+
+@media (min-width: 425px) and (max-width: 480px) {
+
+   .login-container {
+position: relative;
+
+  }
+
+    * {
+  box-sizing: border-box;
+}
+
+  html, body {
+    overflow-x: hidden;
+  }
+
+    #showPassword
+{
+  position: relative;
+  right:50px;
+}
+
+
+}
+
+   .forgot-link {
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .forgot-link:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3 id="modalTitle"></h3>
+      <p id="modalMessage"></p>
+      <button id="closemodal">OK</button>
+    </div>
+  </div>
+
+  <div class="login-container">
+    <div class="header">
+    </div>
+    <img src="img/LOGO.png" alt="Logo" class="logo" />
+    <h2>Login </h2>
+    <input type="email" id="email" placeholder="Username" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <div style="text-align: right; margin-bottom: 15px; font-size: 14px; font-family: Arial, sans-serif;">
+      <input type="checkbox" id="showPassword" style="margin-right: -190px;" />
+      <label for="showPassword">Show Password</label>
+    </div>
+        <button id="loginUser">
+      <span id="buttonText">Login</span>
+    </button>
+    <br><br>
+    <a href="forgotpass.html" class="forgot-link">Forgot Password</a>
+
+    <div class="footer">
+      Don't have an account? <a href="register.html">Register</a>
+    </div>
+  </div>
+
+  <script type="module">
+
+    import { auth, signInWithEmailAndPassword } from './Connection-external-firebase.js';
+    import { db, ref, set, get, update } from './Connection-external-firebase.js';
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('languageselected');
+
+      let accountcode="";
+
+
+    
+    let modal = document.getElementById('modalOverlay');
+    let modaltitle = document.getElementById('modalTitle');
+    let modalmessage = document.getElementById('modalMessage');
+
+    
+const fullURL = window.location.href;
+
+if(fullURL!="https://ehe-fawn.vercel.app/login.html")
+{
+  window.location.href="error.html";
+}
+
+
+    
+    document.getElementById("closemodal").addEventListener('click', function () {
+       loginButton.disabled = false;
+    buttonText.textContent = "Login";
+
+      modal.style.display = "none";
+    });
+
+    const loginButton = document.getElementById("loginUser");
+const buttonText = document.getElementById("buttonText");
+
+
+
+    function loginUser() {
+              loginButton.disabled = true;
+  buttonText.textContent = "Loading...";
+
+      const username = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+    
+
+      if (!username && !password) {
+        modal.style.display = "flex";
+        modaltitle.textContent = "Error";
+        modalmessage.textContent = "Please enter both email and password.";
+        return;
+
+      }
+
+      if (username.includes("@gmail.com")) {
+        modal.style.display = "flex";
+        modaltitle.textContent = "Error";
+        modalmessage.textContent = "Please enter Username not Email.";
+        return;
+      }
+
+      if(username=="admin#123456789" && password=="admin123456789")
+      {
+      localStorage.setItem("loggedInAdmin","admin");
+        window.location.href = "teacher.html";
+      }
+
+
+      const UsersRef1 = ref(db, `Users/`);
+
+
+
+      get(UsersRef1)
+        .then((snapshot) => {
+
+          if (snapshot.exists()) {
+
+            const Users = snapshot.val();
+
+            let email = "";
+
+            for (const key in Users) {
+              let userkey=Users[key];
+let forloopname=userkey.Name;
+              if(forloopname==username)
+            {
+   email=userkey.Email;
+              accountcode=userkey.AccountCode;
+
+            }
+           
+            }
+            
+         
+
+
+
+
+
+            signInWithEmailAndPassword(auth, email, password)
+              .then((userCredential) => {
+
+                const user = userCredential.user;
+
+                if (!user.emailVerified) {
+                  modal.style.display = "flex";
+                  modaltitle.textContent = "Error";
+                  modalmessage.textContent = "Please verify your email before logging in.";
+                  return;
+                }
+
+                const UsersRef = ref(db, `Users/`);
+
+
+
+                get(UsersRef)
+                  .then((snapshot) => {
+                    if (snapshot.exists()) {
+
+
+                      let usersclearedlevels = [];
+
+                      const Users = snapshot.val();
+
+
+
+                      for (const key in Users) {
+                        const usersholder = Users[key];
+
+
+
+                        if (usersholder.Email == email) {
+
+                          localStorage.setItem("loggedIn", accountcode);
+                          let currentUser = accountcode.slice(0, -3);
+                          localStorage.setItem("loggedInwithtoutcode", currentUser);
+                          localStorage.setItem("languageselected", "en");
+                          modal.style.display = "flex";
+                          modaltitle.textContent = "Success";
+                          modalmessage.textContent = "Login successful!";
+                                                  
+                          document.getElementById("closemodal").addEventListener('click', function () {
+                            if (modalmessage.textContent == "Login successful!") {
+                              window.location.href = "index.html";
+                            }
+
+                          })
+
+
+
+                        }
+
+
+                      }
+
+
+
+                    }
+                  })
+
+
+              })
+              .catch((error) => {
+
+                if (error.message == "Firebase: Error (auth/invalid-credential)." || error.message=="Firebase: Error (auth/invalid-email).") {
+                  modal.style.display = "flex";
+                  modaltitle.textContent = "Error";
+                  modalmessage.textContent = "Invalid Username or Password.";
+
+                }
+
+                else {
+                  modal.style.display = "flex";
+                  modaltitle.textContent = "Error";
+                  modalmessage.textContent = error.message;
+                  
+                }
+              });
+
+
+
+
+
+
+
+          }
+
+          else {
+            modal.style.display = "flex";
+            modaltitle.textContent = "Error";
+            modalmessage.textContent = "No Account has been registered.";
+            return;
+          }
+        })
+
+
+
+
+
+    }
+
+    function togglePassword() {
+      const passwordInput = document.getElementById("password");
+      const showPassword = document.getElementById("showPassword");
+      passwordInput.type = showPassword.checked ? "text" : "password";
+    }
+
+    document.getElementById("loginUser").addEventListener("click", function () {
+      loginUser();
+    });
+
+
+    document.getElementById("showPassword").addEventListener("click", function () {
+      togglePassword();
+    });
+
+
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 3 + 1;
+      this.speedX = (Math.random() - 0.5) * 0.5;
+      this.speedY = (Math.random() - 0.5) * 0.5;
+      this.color = `hsl(${Math.random() * 60 + 180}, 100%, 50%)`;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {  
+    particles = [];
+    for (let i = 0; i < 80; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+    requestAnimationFrame(animate);
+  }
+
+  initParticles();
+  animate();
+  </script>
+</body>
+
+</html>
