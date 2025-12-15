@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STOP LOOK LISTEN & CODE</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: white;
+    }
+
+    canvas#bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: linear-gradient(120deg, #001f3f, #000, #002f4b);
+      background-size: 300% 300%;
+      animation: bgShift 20s ease infinite;
+    }
+
+    @keyframes bgShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+
+    .game-container {
+      background: rgba(0, 0, 0, 0.65);
+      padding: 50px 60px;
+      border-radius: 20px;
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+      text-align: center;
+      width: 600px;
+      max-width: 90%;
+      position: relative;
+      animation: fadeIn 1.2s ease;
+      backdrop-filter: blur(10px);
+    }
+
+  
+    .header {
+      position: absolute;
+      top: 15px;
+      left: 25px;
+    }
+
+
+    .title {
+      font-size: 38px;
+      color: #00ffff;
+      text-shadow: 0 0 25px #00f6ff;
+      margin-bottom: 40px;
+    }
+
+    
+    .icon-buttons {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    
+    .circle-btn {
+      background: conic-gradient(
+        from 0deg,
+        #00fff7,
+        #00c4ff,
+        #007bff,
+        #00fff7
+      );
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.4s, box-shadow 0.4s;
+      animation: pulseGlow 2.5s infinite ease-in-out;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+      overflow: hidden;
+    }
+
+    .circle-btn:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 60px rgba(0, 255, 255, 1);
+      animation: none;
+    }
+
+  
+    .circle-btn::before {
+      content: "";
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #001a20 30%, #000 100%);
+      z-index: 0;
+    }
+
+  
+    .circle-btn i {
+      font-size: 2.5em;
+      color: #00ffff;
+      z-index: 1;
+      text-shadow: 0 0 15px #00fff7;
+      transition: transform 0.3s;
+    }
+
+    .circle-btn:hover i {
+      transform: scale(1.3) rotate(10deg);
+    }
+
+ 
+    .icon-label {
+      color: #ffffff;
+      margin-top: 12px;
+      font-size: 1.1em;
+      text-shadow: 0 0 8px #00ffff;
+    }
+
+
+    .settings-icon {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      font-size: 1.8em;
+      color: #00fff7;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .settings-icon:hover {
+      transform: rotate(30deg) scale(1.2);
+      color: #ff00ff;
+    }
+
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.4),
+                    0 0 30px rgba(0, 255, 255, 0.2);
+      }
+      50% {
+        box-shadow: 0 0 35px rgba(0, 255, 255, 0.9),
+                    0 0 60px rgba(0, 255, 255, 0.6);
+      }
+      100% {
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.4),
+                    0 0 30px rgba(0, 255, 255, 0.2);
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 600px) {
+      .circle-btn {
+        width: 90px;
+        height: 90px;
+      }
+      .circle-btn i {
+        font-size: 1.8em;
+      }
+      .icon-label {
+        font-size: 0.9em;
+      }
+      .title {
+        font-size: 26px;
+      }
+    }
+  </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <audio id="clickSound" src="sounds effect/home page sounds.wav" preload="auto"></audio>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="game-container">
+  
+    <h1 class="title">STOP LOOK LISTEN & CODE</h1>
+
+    <div class="icon-buttons">
+      <div class="circle-group" onclick="ChallengeGame()">
+        <div class="circle-btn"><i class="fa-solid fa-trophy"></i></div>
+        <div class="icon-label" id="challenge">Challenge</div>
+      </div>
+
+      <div class="circle-group" onclick="lessons()">
+        <div class="circle-btn"><i class="fa-solid fa-book"></i></div>
+        <div class="icon-label" id="lessons">Lessons</div>
+      </div>
+
+      <div class="circle-group" onclick="level()">
+        <div class="circle-btn"><i class="fa-solid fa-gamepad"></i></div>
+        <div class="icon-label" id="levels">Game Levels</div>
+      </div>
+    </div>
+
+    <div class="settings-icon">
+      <a href="settings.html"><i class="fa-solid fa-gear" style="color: cyan;"></i>
+
+    </div>
+  </div>
+
+  <script>
+
+if (localStorage.getItem('loggedIn') == null) {
+  window.location.href = 'login.html';
+}
+
+if (localStorage.getItem('languageselected') == "tl") {
+
+
+    document.getElementById("challenge").textContent = "Pagsubok";
+    document.getElementById("lessons").textContent = "Mga Aralin";
+    document.getElementById("levels").textContent = "Lebel";
+
+}
+
+  const clickSound = document.getElementById("clickSound");
+
+
+  let savedVolume = localStorage.getItem("volume");
+  if (savedVolume !== null) {
+    savedVolume = parseFloat(savedVolume);
+    
+    if (savedVolume > 1) savedVolume = savedVolume / 100;
+  } else {
+    savedVolume = 0.5; 
+  }
+
+  clickSound.volume = savedVolume;
+
+  function playClickSound() {
+    clickSound.currentTime = 0;
+    clickSound.play();
+  }
+
+  function ChallengeGame() {
+    playClickSound();
+    setTimeout(() => window.location.href = "challenge.html", 300);
+  }
+
+  function lessons() {
+    playClickSound();
+    setTimeout(() => window.location.href = "lesson.html", 300);
+  }
+
+  function level() {
+    playClickSound();
+    setTimeout(() => window.location.href = "level.html", 300);
+  }
+
+
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 3 + 1;
+      this.speedX = (Math.random() - 0.5) * 0.5;
+      this.speedY = (Math.random() - 0.5) * 0.5;
+      this.color = `hsl(${Math.random() * 60 + 180}, 100%, 50%)`;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < 80; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+    requestAnimationFrame(animate);
+  }
+
+  initParticles();
+  animate();
+  </script>
+</body>
+</html>
