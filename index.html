@@ -227,8 +227,10 @@
   <script>
 
 if (localStorage.getItem('loggedIn') == null) {
-  window.location.href = 'login.html';
+  window.location.replace = '/login.html';
 }
+
+ history.pushState(null, "", location.href);
 
  window.addEventListener("popstate", function () {
    
