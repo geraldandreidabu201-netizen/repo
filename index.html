@@ -230,6 +230,11 @@ if (localStorage.getItem('loggedIn') == null) {
   window.location.href = 'login.html';
 }
 
+ window.addEventListener("popstate", function () {
+   
+    window.location.replace("/login.html");
+  });
+
 if (localStorage.getItem('languageselected') == "tl") {
 
 
