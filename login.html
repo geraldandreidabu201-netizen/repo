@@ -280,15 +280,15 @@ position: relative;
     import { auth, signInWithEmailAndPassword } from './Connection-external-firebase.js';
     import { db, ref, set, get, update } from './Connection-external-firebase.js';
 
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('languageselected');
-    
+
+
   history.pushState(null, null, location.href);
     window.onpopstate = function () {
         history.go(1);
     };
 
-
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('languageselected');
 
       let accountcode="";
 
