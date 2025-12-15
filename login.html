@@ -279,6 +279,18 @@ position: relative;
 
     import { auth, signInWithEmailAndPassword } from './Connection-external-firebase.js';
     import { db, ref, set, get, update } from './Connection-external-firebase.js';
+
+
+      if (localStorage.getItem("refreshLogin") === "true") {
+    localStorage.removeItem("refreshLogin");
+    window.location.reload();
+  }
+
+
+  if (localStorage.getItem("loggedIn")) {
+    window.location.replace("/dashboard.html");
+  }
+
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('languageselected');
 

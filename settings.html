@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
+  <title>Settings Panel</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body,
+    html {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #0ff;
+    }
+
+    canvas#bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: linear-gradient(120deg, #001f3f, #000, #002f4b);
+      background-size: 300% 300%;
+      animation: bgShift 20s ease infinite;
+    }
+
+    @keyframes bgShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .settings-container {
+      width: 750px;
+      max-width: 90%;
+      height: 440px;
+      display: flex;
+      border-radius: 20px;
+      background: rgba(10, 20, 30, 0.8);
+      box-shadow: 0 0 30px #00fff7, inset 0 0 20px rgba(0, 255, 247, 0.2);
+      backdrop-filter: blur(12px);
+      overflow: hidden;
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      border-right: 1px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .back-arrow {
+      font-size: 1.1em;
+      color: #00ffff;
+      text-decoration: none;
+      margin-bottom: 25px;
+      transition: color 0.3s;
+    }
+
+    .back-arrow:hover {
+      color: #fff;
+    }
+
+    .sidebar-item {
+      margin: 8px 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: left;
+      color: #0ff;
+      background: rgba(0, 255, 255, 0.05);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      letter-spacing: 1px;
+    }
+
+    .sidebar-item.active,
+    .sidebar-item:hover {
+      background: rgba(0, 255, 255, 0.2);
+      box-shadow: 0 0 10px #00ffff;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .main-panel {
+      flex: 1;
+      padding: 40px;
+      position: relative;
+      overflow-y: auto;
+      color: #0ff;
+    }
+
+    .main-panel h2 {
+      margin-bottom: 25px;
+      font-size: 22px;
+      letter-spacing: 2px;
+    }
+
+    .setting-group {
+      margin-bottom: 30px;
+    }
+
+    .setting-label {
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: #0ff;
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 250px;
+      height: 6px;
+      background: linear-gradient(90deg, #00fff7, #00aaff);
+      border-radius: 3px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background: #00fff7;
+      box-shadow: 0 0 15px #00fff7;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    input[type=range]:hover::-webkit-slider-thumb {
+      transform: scale(1.3);
+      box-shadow: 0 0 25px #00fff7;
+    }
+
+    .Logout,
+    #deleteaccount {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      font-family: 'Orbitron', sans-serif;
+      transition: all 0.3s ease;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+
+    .Logout {
+      background: transparent;
+      color: #0ff;
+      box-shadow: 0 0 10px #00fff7 inset, 0 0 10px #00fff7;
+    }
+
+    .Logout:hover {
+      background: #ff4d4f;
+      color: #000;
+      transform: scale(1.05);
+    }
+
+    #deleteaccount {
+      background: transparent;
+      color: #ff4d4f;
+      box-shadow: 0 0 10px #ff4d4f inset, 0 0 10px #ff4d4f;
+    }
+
+    #deleteaccount:hover {
+      background: #ff4d4f;
+      color: #000;
+      transform: scale(1.05);
+    }
+
+    .language-select {
+      background: transparent;
+      border: 1px solid #00fff7;
+      color: #0ff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      outline: none;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .language-select:hover {
+      box-shadow: 0 0 10px #00fff7;
+    }
+
+    .profile-icon {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid #00fff7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #00fff7;
+      box-shadow: 0 0 10px #00fff7;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .settings-container {
+        flex-direction: column;
+        height: auto;
+        width: 95%;
+      }
+
+      .sidebar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+      }
+
+      .sidebar-item {
+        flex: 0 1 40%;
+        text-align: center;
+      }
+
+      .main-panel {
+        padding: 25px;
+      }
+    }
+
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .modal {
+      background: rgb(0, 0, 0);
+      border-radius: 12px;
+      padding: 30px 25px;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .modal h3 {
+      color: #77d6a5;
+      margin-bottom: 10px;
+    }
+
+    .modal p {
+      margin: 0 0 20px;
+    }
+
+    .modal button {
+      background-color: #60c18f;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+
+    @media (max-width: 425px) {
+
+      html,
+      body {
+        overflow-y: auto !important;
+        height: auto !important;
+      }
+
+      body {
+        display: block !important;
+        padding-top: 40px !important;
+        padding-bottom: 40px !important;
+      }
+
+      .settings-container {
+        height: auto !important;
+        margin: 0 auto !important;
+        transform: none !important;
+      }
+    }
+
+    @media (max-width: 425px) {
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto !important;
+        width: 100%;
+      }
+
+      .sidebar-item {
+        width: 80%;
+        text-align: center;
+        margin: 6px auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3 id="modalTitle"></h3>
+      <p id="modalMessage"></p>
+      <button id="yes">Yes</button>
+      <button id="closemodal">No</button>
+    </div>
+  </div>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="settings-container">
+    <div class="sidebar">
+      <a href="index.html" class="back-arrow" id="back">← BACK</a>
+      <div class="sidebar-item active" data-panel="general" id="general">GENERAL</div>
+      <div class="sidebar-item" data-panel="terms" id="terms">TERMS</div>
+      <div class="sidebar-item" data-panel="help" id="help">HELP</div>
+      <div class="sidebar-item" data-panel="progress" id="progress">PROGRESS</div>
+      <div class="sidebar-item" data-panel="account">ACCOUNT</div>
+    </div>
+
+    <div class="main-panel">
+      <div class="profile-icon">😄</div>
+      <div id="panel-content"></div>
+    </div>
+  </div>
+
+  <script type="module">
+
+    if (localStorage.getItem('loggedIn') == null) {
+      window.location.href = 'login.html';
+    }
+
+    import { db, ref, get, remove, auth, deleteUser, signInWithEmailAndPassword, signOut } from './Connection-external-firebase.js';
+
+
+    let modal = document.getElementById('modalOverlay');
+    let modaltitle = document.getElementById('modalTitle');
+    let modalmessage = document.getElementById('modalMessage');
+
+
+
+    let currentUser = localStorage.getItem("loggedInwithtoutcode");
+
+
+
+    let currentlanguage = localStorage.getItem('languageselected');
+
+    document.getElementById("closemodal").addEventListener('click', function () {
+      const deleteButton = document.getElementById("deleteaccount");
+      const buttonText = document.getElementById("buttonText");
+
+      if (deleteButton) {
+        deleteButton.disabled = false;
+      }
+
+      if (buttonText) {
+        if (currentlanguage == "tl") {
+          buttonText.textContent = "idelete ang Account";
+        } else {
+          buttonText.textContent = "Delete Account";
+        }
+      }
+
+      modal.style.display = "none";
+    });
+
+    console.log(currentUser);
+    const panelContent = document.getElementById('panel-content');
+
+    let changed = "false";
+
+    let contentMap = "";
+
+    if (currentlanguage == "tl") {
+      contentMap = {
+        general: `
+        <h2>SETTINGS</h2>
+        <div class="setting-group">
+          <div class="setting-label">Lakas ng Tunog</div>
+          <input type="range" id="volumeControl" min="0" max="100" step="1">
+          <span id="volumeValue">50</span>
+        </div>
+        <div class="setting-group">
+          <div class="setting-label">Linguahe</div>
+          <select class="language-select" id="languageSelect">
+            <option value="en">English</option>
+            <option value="tl">Tagalog</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <button class="Logout">Ilogout ang Account</button>
+        </div>
+      `,
+        terms: `<h2>Mga Tuntunin at Kondisyon</h2> <p style="color: #ccc; font-size: 14px;">
+                Kapag gumagawa ng mga Termino at Kondisyon (T&C) para sa mga laro sa code, mahalagang isama ang mga sumusunod upang maprotektahan ang parehong developer at user:<br><br>
+                <strong>Pagtanggap ng mga Termino:</strong><br>
+                Kailangang tanggapin ng mga user ang T&C bago gamitin ang laro.<br><br>
+                <strong>Responsibilidad ng User:</strong><br>
+                Hindi pinapayagan ang panlilinlang, pagha-hack, o paggamit ng mga bug.<br><br>
+                <strong>Pamamahala ng Account:</strong><br>
+                Panatilihing ligtas ang account at agad na i-report kung may di-awtorisadong access.<br><br>
+                <strong>Karapatang Ari:</strong><br>
+                Ang lahat ng content ay pag-aari ng developer at hindi pwedeng kopyahin.<br><br>
+                <strong>Limitasyon ng Pananagutan:</strong><br>
+                Hindi mananagot ang developer sa anumang pinsalang dulot ng laro.<br><br>
+                <strong>Pagbabago ng mga Termino:</strong><br>
+                Maaaring baguhin ang T&C anumang oras na may abiso.<br><br>
+                <strong>Batas na Umiiral:</strong><br>
+                Ang mga usapin ay saklaw ng naaangkop na batas.<br><br>
+                <strong>Impormasyon:</strong><br>
+                Makipag-ugnayan sa Mysterymarkup@gmail.com para sa tanong o concern.
+              </p><p>Dapat sumang-ayon ang mga gumagamit sa mga tuntunin bago gamitin ang app.</p>`,
+        help: `<h2>TULONG</h2><p>Para sa tulong, makipag-ugnayan sa <span style="color:#0ff;">Stoplooklistencode@gmail.com</span></p>`,
+        progress: `<h2>PROGRESO</h2><div id="progress-container"><p>Kinukuhang ang iyong progreso...</p></div>`,
+        account: `<h2>ACCOUNT</h2><p>Nakalog-in bilang: <strong>${currentUser}</strong></p>
+         <button id="deleteaccount">
+                      <span id="buttonText">Idelete ang Account</span>
+    </button>
+        `
+      };
+
+      document.getElementById("back").innerText = "←Bumalik";
+      document.getElementById("general").innerText = "Pangkalahatang Setting";
+      document.getElementById("terms").innerText = "Mga Tuntunin";
+      document.getElementById("help").innerText = "Tulong";
+      document.getElementById("progress").innerText = "Progreso";
+
+
+    }
+
+    else {
+      contentMap = {
+        general: `
+        <h2>SETTINGS</h2>
+        <div class="setting-group">
+          <div class="setting-label">Audio Volume</div>
+          <input type="range" id="volumeControl" min="0" max="100" step="1">
+          <span id="volumeValue">50</span>
+        </div>
+        <div class="setting-group">
+          <div class="setting-label">Language</div>
+          <select class="language-select" id="languageSelect">
+            <option value="en">English</option>
+            <option value="tl">Tagalog</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <button class="Logout">Logout</button>
+        </div>
+      `,
+        terms: `<h2>TERMS AND CONDITIONS</h2> <p style="color: #ccc; font-size: 14px;">
+                When creating Terms and Conditions (T&C) for gaming code games, it's essential to cover several key areas to ensure clarity and legal protection for both the developers and the users.<br><br>
+                <strong>Acceptance of Terms:</strong><br>
+                Users must agree to the T&C before using the game.<br><br>
+                <strong>User Responsibilities:</strong><br>
+                Users should not cheat, hack, or exploit bugs.<br><br>
+                <strong>Account Management:</strong><br>
+                Users must keep their account secure and report unauthorized access.<br><br>
+                <strong>Intellectual Property:</strong><br>
+                All game content is owned or licensed by the developers.<br><br>
+                <strong>Limitation of Liability:</strong><br>
+                Developers are not liable for data loss or damage.<br><br>
+                <strong>Changes to Terms:</strong><br>
+                Terms may change anytime with notice.<br><br>
+                <strong>Governing Law:</strong><br>
+                Disputes are subject to relevant jurisdiction.<br><br>
+                <strong>Contact Info:</strong><br>
+                Contact Mysterymarkup@gmail.com for questions or concerns.
+              </p>
+<p>Users must agree to the terms before using the app.</p>`,
+        help: `<h2>HELP</h2><p>For help, contact <span style="color:#0ff;">Stoplooklistencode@gmail.com</span></p>`,
+        progress: `<h2>PROGRESS</h2><div id="progress-container"><p>Loading your progress...</p></div>`,
+        account: `<h2>ACCOUNT</h2><p>Logged in as: <strong>${currentUser}</strong></p>
+                  <button id="deleteaccount">
+                      <span id="buttonText">Delete Account</span>
+    </button>
+        `
+      };
+    }
+
+
+    async function loadProgress() {
+      let currentUser = localStorage.getItem("loggedIn");
+
+      const progressContainer = document.getElementById('progress-container');
+
+      try {
+        const progressRef = ref(db, `Users/${currentUser}/Level Cleared`);
+        console.log(`Users/${currentUser}/Level Cleared`);
+        const snapshot = await get(progressRef);
+
+        if (snapshot.exists()) {
+          console.log(currentUser);
+          const Levelvalue = snapshot.val();
+          if (Levelvalue == "") {
+            if (currentlanguage == "tl") {
+              progressContainer.innerHTML = '<p>Walang Lebel na natapos.</p>';
+              return;
+            }
+
+            else {
+              progressContainer.innerHTML = '<p>No level has been cleared.</p>';
+              return;
+            }
+
+          }
+          const data = snapshot.val();
+          
+
+          progressContainer.innerHTML = Object.keys(data)
+            .filter(key => data[key] && data[key].level !== undefined && data[key].score !== undefined)
+            .sort((a, b) => data[a].level - data[b].level)
+            .map(key => {
+              const { level, score } = data[key];
+              
+              if (currentlanguage == "tl") {
+                return `<p><strong>Lebel ${level}</strong> Iscore: ${score}</p>`;
+              } else {
+                return `<p><strong>Level ${level}</strong> Score: ${score}</p>`;
+              }
+            }).join('');
+
+        } else {
+           
+            if (currentlanguage == "tl") {
+                progressContainer.innerHTML = '<p>Walang Lebel na natapos.</p>';
+            } else {
+                progressContainer.innerHTML = '<p>No level has been cleared.</p>';
+            }
+        }
+      } catch (error) {
+        progressContainer.innerHTML = `<p style="color:red;">Error loading progress: ${error.message}</p>`;
+      }
+    }
+
+
+    function switchPanel(panel) {
+      panelContent.innerHTML = contentMap[panel];
+
+      if (panel == "general" && changed == true) {
+        location.reload();
+      }
+
+
+      if (panel === 'progress') {
+        loadProgress();
+      }
+
+
+      const logoutBtn = document.querySelector(".Logout");
+
+
+  if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    modal.style.display = "flex";
+    modaltitle.textContent = "Warning";
+    modalmessage.textContent = "Are you sure you want to Logout?";
+
+    document.getElementById("yes").onclick = () => {
+
+      localStorage.removeItem("loggedIn");
+
+     
+      localStorage.setItem("refreshLogin", "true");
+
+      window.location.replace("/login.html");
+    };
+  });
+}
+
+      const deleteBtn = document.getElementById("deleteaccount");
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", async () => {
+
+          const deleteButton = document.getElementById("deleteaccount");
+          const buttonText = document.getElementById("buttonText");
+
+
+          deleteButton.disabled = true;
+          buttonText.textContent = "Loading...";
+
+          const secretKey = "my_super_secret_key_123";
+
+          async function decryptpass(encrypted) {
+            const bytes = CryptoJS.AES.decrypt(encrypted, secretKey);
+            const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+            return decrypted;
+          }
+          let currentUser = localStorage.getItem("loggedIn");
+          let email = "";
+          let decryptedpassword = "";
+          const UsersRef = ref(db, `Users/${currentUser}`);
+
+
+
+          await get(UsersRef)
+            .then(async (snapshot) => {
+              if (snapshot.exists()) {
+
+
+                let userlogin = snapshot.val();
+                email = userlogin.Email;
+                decryptedpassword = await decryptpass(userlogin.Password)
+
+              }
+            })
+
+          const userCredential = await signInWithEmailAndPassword(auth, email, decryptedpassword);
+          const user = userCredential.user;
+
+
+
+
+
+          if (currentlanguage == "tl") {
+            modal.style.display = "flex";
+            modaltitle.textContent = "Babala";
+            modalmessage.textContent = "Sigurado kabang gusto mong idelete ang iyong Account?";
+            document.getElementById("yes").addEventListener('click', async function () {
+
+              try {
+                const userRef = ref(db, `Users/${currentUser}`);
+                await remove(userRef);
+                if (user) await deleteUser(user);
+                await signOut(auth);
+                modal.style.display = "flex";
+                modaltitle.textContent = "Matagumpay";
+                modalmessage.textContent = "Na delete na ang iyong Account";
+
+                document.getElementById("yes").style.display = "none";
+                document.getElementById("closemodal").textContent = "Ok";
+                document.getElementById("closemodal").addEventListener("click", function () {
+                  let textcontent = document.getElementById("closemodal").textContent;
+
+                  if (textcontent == "Ok") {
+                    localStorage.removeItem("loggedIn");
+                    window.location.href = "login.html";
+                  }
+                })
+              } catch (error) {
+                modal.style.display = "flex";
+                modaltitle.textContent = "Error";
+                modalmessage.textContent = "Error sa pag delete ng account: " + error.message;
+                return
+              }
+            })
+
+          }
+          else {
+            modal.style.display = "flex";
+            modaltitle.textContent = "Warning";
+            modalmessage.textContent = "Are you sure you want to delete your Account?";
+            document.getElementById("yes").addEventListener('click', async function () {
+
+              try {
+                const userRef = ref(db, `Users/${currentUser}`);
+                await remove(userRef);
+                if (user) await deleteUser(user);
+                modal.style.display = "flex";
+                modaltitle.textContent = "Success";
+                modalmessage.textContent = "Your Account has been deleted";
+
+                document.getElementById("yes").style.display = "none";
+                document.getElementById("closemodal").textContent = "Ok";
+                document.getElementById("closemodal").addEventListener("click", function () {
+                  let textcontent = document.getElementById("closemodal").textContent;
+                  if (textcontent == "Ok") {
+
+                    localStorage.removeItem("loggedIn");
+                    window.location.href = "login.html";
+                  }
+                })
+
+              } catch (error) {
+                modal.style.display = "flex";
+                modaltitle.textContent = "Error";
+                modalmessage.textContent = "Error deleting account: " + error.message;
+                return
+              }
+            })
+          }
+
+        });
+      }
+
+      const volumeControl = document.getElementById("volumeControl");
+      const volumeValue = document.getElementById("volumeValue");
+      if (volumeControl) {
+        const savedVolume = localStorage.getItem("volume");
+        let volume = savedVolume ? parseFloat(savedVolume) : 0.5;
+        if (volume <= 1) volume *= 100;
+        volumeControl.value = volume;
+        volumeValue.textContent = Math.round(volume);
+
+        volumeControl.addEventListener("input", () => {
+          const val = parseInt(volumeControl.value);
+          volumeValue.textContent = val;
+          localStorage.setItem("volume", (val / 100).toString());
+          window.dispatchEvent(new CustomEvent("volumeChanged", { detail: val / 100 }));
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+
+
+      if (currentlanguage == "tl") {
+        contentMap.account = `<h2>ACCOUNT</h2><p>Nakalog-in bilang: <strong>${currentUser}</strong></p>
+    <br>
+    <button id="deleteaccount">
+                      <span id="buttonText">Idelete ang Account</span>
+    </button>`;
+      } else {
+        contentMap.account = `<h2>ACCOUNT</h2><p>Logged in as: <strong>${currentUser}</strong>
+      <br>
+      <button id="deleteaccount">
+                      <span id="buttonText">Delete Account</span>
+    </button>`;
+      }
+
+      switchPanel('general');
+      document.querySelectorAll(".sidebar-item").forEach(item => {
+        item.addEventListener("click", () => {
+          document.querySelectorAll(".sidebar-item").forEach(i => i.classList.remove("active"));
+          item.classList.add("active");
+          changed = true;
+          switchPanel(item.dataset.panel);
+        });
+      });
+      const languageSelect = document.getElementById("languageSelect");
+
+      languageSelect.addEventListener("change", function () {
+        const selectedLang = this.value;
+        localStorage.setItem("languageselected", selectedLang);
+        location.reload();
+      });
+      document.getElementById("languageSelect").value = currentlanguage;
+    });
+  </script>
+
+  <script>
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+        this.color = `hsl(${Math.random() * 60 + 180}, 100%, 50%)`;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 20;
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < 80; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    initParticles();
+    animate();
+
+
+  </script>
+</body>
+
+</html>
