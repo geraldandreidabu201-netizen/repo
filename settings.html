@@ -605,15 +605,8 @@
   yesBtn.onclick = () => {
    
       localStorage.removeItem("loggedIn");
-      localStorage.setItem("refreshLogin", "true");
 
- 
-      window.history.pushState(null, "", window.location.href);
-      window.onpopstate = function () {
-        window.history.pushState(null, "", window.location.href);
-      };
-
-      window.location.href("login.html");
+      window.location.replace("login.html");
     };
   });
 }
