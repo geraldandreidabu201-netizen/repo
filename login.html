@@ -281,10 +281,11 @@ position: relative;
     import { db, ref, set, get, update } from './Connection-external-firebase.js';
 
 
-      if (localStorage.getItem("refreshLogin") === "true") {
-    localStorage.removeItem("refreshLogin");
-    window.location.reload();
-  }
+   window.addEventListener('pageshow', function (event) {
+      if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        window.location.reload();
+      }
+    });
 
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('languageselected');

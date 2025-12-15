@@ -602,10 +602,18 @@
     modalmessage.textContent = "Are you sure you want to Logout?";
 
     const yesBtn = document.getElementById("yes");
-    yesBtn.onclick = () => {
+  yesBtn.onclick = () => {
+   
       localStorage.removeItem("loggedIn");
       localStorage.setItem("refreshLogin", "true");
-      window.location.replace("/login.html");
+
+ 
+      window.history.pushState(null, "", window.location.href);
+      window.onpopstate = function () {
+        window.history.pushState(null, "", window.location.href);
+      };
+
+      window.location.replace("login.html");
     };
   });
 }
