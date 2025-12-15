@@ -601,15 +601,11 @@
     modaltitle.textContent = "Warning";
     modalmessage.textContent = "Are you sure you want to Logout?";
 
-    document.getElementById("yes").onclick = () => {
-
-      localStorage.removeItem("loggedIn");
-
-     
-      localStorage.setItem("refreshLogin", "true");
-
-      window.location.replace("/login.html");
-    };
+   const yesBtn = document.getElementById("yes");
+yesBtn.onclick = () => {
+  localStorage.removeItem("loggedIn");
+  window.location.replace("/login.html");
+};
   });
 }
 
