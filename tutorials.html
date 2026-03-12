@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tutorial — How to Play Challenge Mode</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  height:100%;
+  width:100%;
+  font-family:'Orbitron',sans-serif;
+  background: radial-gradient(circle at center,#001f3f,#000,#002f4b);
+  color:#fff;
+  overflow-x:hidden;
+}
+
+
+canvas#bgCanvas{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  background: radial-gradient(circle at center,#001f3f,#000,#002f4b);
+  background-size:300% 300%;
+  animation:bgShift 20s ease infinite;
+}
+@keyframes bgShift{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+
+.tutorial-container{
+  position:relative;
+  z-index:5;
+  max-width:900px;
+  margin:100px auto;
+  padding:40px 30px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(0,255,255,0.3);
+  border-radius:18px;
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 30px rgba(0,255,255,0.2);
+}
+
+
+h1{
+  text-align:center;
+  color:#00fff7;
+  text-shadow:0 0 20px #00fff7;
+  margin-bottom:20px;
+}
+
+
+.back-btn{
+  display:inline-block;
+  margin-top:30px;
+  padding:12px 26px;
+  border-radius:10px;
+  border:2px solid #00fff7;
+  color:#00fff7;
+  text-decoration:none;
+  transition:all 0.3s ease;
+  font-weight:700;
+}
+.back-btn:hover{
+  background:#00fff7;
+  color:#000;
+  box-shadow:0 0 25px #00fff7;
+}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<div class="tutorial-container" id="tutorialcontainer">
+  <h1>HOW TO PLAY — CHALLENGE MODE</h1>
+  <p>Challenge Mode is an interactive coding game that tests your skills in multiple programming languages. Follow these steps to get started:</p>
+  <ol>
+    <li>Login to your account.</li>
+    <li>Select an available (unlocked) challenge.</li>
+    <li>Hover to preview — click to enter the challenge.</li>
+    <li>Complete challenges to unlock the next ones!</li>
+  </ol>
+  <p>Each challenge includes neon visuals, sounds, and smooth animations for an immersive experience.</p>
+
+  <a href="challenge.html" class="back-btn" onclick="localStorage.setItem('tutorialSeen','true')">← Back to Challenge Mode</a>
+</div>
+
+<script>
+
+  if (localStorage.getItem('loggedIn') == null) {
+  window.location.href = 'login.html';
+}
+
+  if (currentlanguage == "tl") {
+            document.getElementById("tutorialcontainer").innerHTML=`
+
+  <h1>PAANO MAGLARO — CHALLENGE MODE</h1>
+  <p>Ang Challenge Mode ay isang interaktibong coding game na sumusubok sa iyong kakayahan sa iba't ibang programming languages. Sundin ang mga hakbang na ito upang makapagsimula:</p>
+  <ol>
+    <li>Mag-login sa iyong account.</li>
+    <li>Pumili ng available (unlock) na challenge.</li>
+    <li>I-hover para i-preview — i-click para pumasok sa challenge.</li>
+    <li>Taposin ang mga challenges para ma-unlock ang susunod!</li>
+  </ol>
+  <p>Bawat challenge ay may neon visuals, sounds, at smooth animations para sa mas immersive na karanasan.</p>
+
+  <a href="challenge.html" class="back-btn" onclick="localStorage.setItem('tutorialSeen','true')">← Bumalik sa Pagsubok</a>
+`;
+            }
+
+
+
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();
+class Particle{
+  constructor(){
+    this.x=Math.random()*canvas.width;
+    this.y=Math.random()*canvas.height;
+    this.size=Math.random()*2+1;
+    this.speedX=(Math.random()-0.5)*0.3;
+    this.speedY=(Math.random()-0.5)*0.3;
+    this.color=`hsl(${Math.random()*60+180},100%,65%)`;
+  }
+  update(){this.x+=this.speedX;this.y+=this.speedY;
+    if(this.x<0||this.x>canvas.width)this.speedX*=-1;
+    if(this.y<0||this.y>canvas.height)this.speedY*=-1;}
+  draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.shadowColor=this.color;ctx.shadowBlur=20;
+    ctx.fillStyle=this.color;ctx.fill();}
+}
+function initParticles(){particles=[];for(let i=0;i<80;i++)particles.push(new Particle());}
+function animateParticles(){ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{p.update();p.draw();});
+  requestAnimationFrame(animateParticles);}
+initParticles();
+animateParticles();
+</script>
+</body>
+</html>
