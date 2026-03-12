@@ -432,7 +432,7 @@ hazards: [
   
   ctx.fillStyle = "#223248";
   for (const p of curLevel.plats) {
-    ctx.fillRect(p[0] * scaleX, p[1] * scaleY, p[2] * scaleX, p[3] * scaleY);
+    ctx.fillRect(p[0] * scaleX, (p[1] - 50) * scaleY, p[2] * scaleX, p[3] * scaleY);
   }
 
  
@@ -440,15 +440,15 @@ hazards: [
   for (const h of curLevel.hazards) { 
     if (h.type === 'lava') { 
       ctx.fillStyle = "#b91c1c"; 
-      ctx.fillRect(h.x * scaleX, h.y * scaleY, h.w * scaleX, h.h * scaleY); 
-      ctx.fillStyle = "#f97316"; 
-      ctx.fillRect(h.x * scaleX, (h.y + Math.floor(h.h / 3)) * scaleY, h.w * scaleX, Math.floor(h.h / 3) * scaleY); 
+      ctx.fillRect(h.x * scaleX, (h.y - 50) * scaleY, h.w * scaleX, h.h * scaleY);
+
+     
     } 
     else if (h.type === 'water') { 
       ctx.fillStyle = "#0ea5e9"; 
-      ctx.fillRect(h.x * scaleX, h.y * scaleY, h.w * scaleX, h.h * scaleY); 
-      ctx.fillStyle = "#60a5fa"; 
-      ctx.fillRect(h.x * scaleX, (h.y + Math.floor(h.h / 3)) * scaleY, h.w * scaleX, Math.floor(h.h / 3) * scaleY); 
+      ctx.fillRect(h.x * scaleX, (h.y - 50) * scaleY, h.w * scaleX, h.h * scaleY);
+
+     
     } 
     else if (h.type === 'spike') { 
       const spikeW = 12; 
@@ -456,9 +456,9 @@ hazards: [
 
       for (let sx = h.x; sx < h.x + h.w; sx += spikeW) { 
         ctx.beginPath(); 
-        ctx.moveTo(sx * scaleX, (h.y + h.h) * scaleY); 
-        ctx.lineTo((sx + spikeW / 2) * scaleX, h.y * scaleY); 
-        ctx.lineTo((sx + spikeW) * scaleX, (h.y + h.h) * scaleY); 
+    ctx.moveTo(sx * scaleX, (h.y + h.h - 50) * scaleY);
+ctx.lineTo((sx + spikeW / 2) * scaleX, (h.y - 50) * scaleY);
+ctx.lineTo((sx + spikeW) * scaleX, (h.y + h.h - 50) * scaleY);
         ctx.closePath(); 
         ctx.fill(); 
       } 
@@ -478,21 +478,21 @@ hazards: [
     const floatY = t[2] + Math.sin(time * 0.06 + phase) * amp;
 
     ctx.fillStyle = "rgba(240,240,240,0.06)";
-    ctx.fillRect((t[1] - 44) * scaleX, (floatY - 16) * scaleY, 88 * scaleX, 28 * scaleY);
+   ctx.fillRect((t[1] - 44) * scaleX, (floatY - 16 - 50) * scaleY, 88 * scaleX, 28 * scaleY);
 
     ctx.fillStyle = "#f3f4f6";
-    ctx.fillText(t[0], t[1] * scaleX, floatY * scaleY);
+   ctx.fillText(t[0], t[1] * scaleX, (floatY - 50) * scaleY);
 
     ctx.strokeStyle = "rgba(0,0,0,0.3)";
     ctx.lineWidth = 1;
-    ctx.strokeRect((t[1] - 44) * scaleX, (floatY - 16) * scaleY, 88 * scaleX, 28 * scaleY);
+    ctx.strokeRect((t[1] - 44) * scaleX, (floatY - 16 - 50) * scaleY, 88 * scaleX, 28 * scaleY);
   }
 
 
   
   for (const p of players) {
     ctx.fillStyle = p.color;
-    ctx.fillRect(p.x * scaleX, p.y * scaleY, p.w * scaleX, p.h * scaleY);
+    ctx.fillRect(p.x * scaleX, (p.y - 50) * scaleY, p.w * scaleX, p.h * scaleY);
 
     if (p.invuln > 0) {
       ctx.strokeStyle = "#ffffff";
