@@ -6,14 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>Code Quest — Fireboy & Watergirl Style (Floating Codes) - Fixed Floor</title>
   <style>
- body {
-  margin: 0;
-  background: #0b1220;
-  color: #eaf2ff;
-  font-family: Arial, sans-serif;
-  overflow: hidden;
-  touch-action: none;
-}
+    body {
+      margin: 0;
+      background: #0b1220;
+      color: #eaf2ff;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      touch-action: none;
+    }
 
     canvas {
       background: #0f1724;
@@ -61,7 +61,7 @@
       color: #a7c0f7;
     }
 
-   
+
     .modal {
       position: fixed;
       top: 0;
@@ -101,50 +101,41 @@
       padding: 8px 16px;
     }
 
-.mobile-controls{
-  position:fixed;
-  bottom:20px;
-  width:100%;
-  justify-content:space-around;
-  z-index:20;
-  display:none;
-}
+    .mobile-controls {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      justify-content: space-around;
+      z-index: 20;
+      display: none;
+    }
 
 
-@media (max-width: 1024px){
-  .mobile-controls{
-    display:flex;
-  }
-}
+    @media (max-width: 1024px) {
+      .mobile-controls {
+        display: flex;
+      }
+    }
 
-.mobile-controls button{
-  width:60px;
-  height:60px;
-  font-size:20px;
-  border-radius:50%;
-  max-width:15vw;
-  max-height:15vw;
-}
+    .mobile-controls button {
+      position: relative;
+      width: 5vw;
+      height: 5vw;
+      font-size: 2vw;
+      border-radius: 50%;
+      max-width: 15vw;
+      max-height: 15vw;
+      bottom: -20px;
+    }
 
 
-@media (max-width: 1024px) and (orientation: landscape){
 
-  .mobile-controls{
-    display:flex;
-  }
 
-  canvas{
-    transform: scale(0.9);
-    transform-origin: top left;
-  }
-
-}
-
-@media (orientation: portrait){
-  .mobile-controls{
-    display:none;
-  }
-}
+    @media (orientation: portrait) {
+      .mobile-controls {
+        display: none;
+      }
+    }
   </style>
 </head>
 
@@ -180,13 +171,13 @@
   </div>
 
   <div class="mobile-controls">
-  <button id="p1-left">◀</button>
-  <button id="p1-jump">▲</button>
-  <button id="p1-right">▶</button>
-  <button id="p2-left">◀</button>
-  <button id="p2-jump">▲</button>
-  <button id="p2-right">▶</button>
-</div>
+    <button id="p1-left">◀</button>
+    <button id="p1-jump">▲</button>
+    <button id="p1-right">▶</button>
+    <button id="p2-left">◀</button>
+    <button id="p2-jump">▲</button>
+    <button id="p2-right">▶</button>
+  </div>
 
   <script type="module">
     import { db, ref, update } from './Connection-external-firebase.js';
@@ -198,8 +189,20 @@
 
     let name = localStorage.getItem('loggedIn');
 
- 
+
     const canvas = document.getElementById("game");
+
+    let scaleX = 1;
+    let scaleY = 1;
+
+    function updateScale() {
+      scaleX = window.innerWidth / 1400;
+      scaleY = window.innerHeight / 720;
+    }
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+
     const ctx = canvas.getContext("2d");
     let W = window.innerWidth, H = window.innerHeight;
     canvas.width = W; canvas.height = H;
@@ -247,11 +250,13 @@
           ["<h1>", 1160, 480, 1, 0, Math.random() * Math.PI * 2],
           ["<h7>", 1280, 320, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [
-          { x: 440, y: 600, w: 60, h: 20, type: 'lava' },
-          { x: 720, y: 600, w: 60, h: 20, type: 'spike' },
-          { x: 980, y: 600, w: 60, h: 20, type: 'water' }
-        ]
+
+hazards: [ 
+  { x: 440, y: 600, w: 60, h: 20, type: 'lava' }, 
+  { x: 720, y: 600, w: 60, h: 20, type: 'spike' }, 
+  { x: 980, y: 600, w: 60, h: 20, type: 'water' } 
+]
+
       },
       {
         name: "CSS", hint: "css props",
@@ -264,27 +269,30 @@
           ["#id", 820, 310, 1, 0, Math.random() * Math.PI * 2],
           ["#idd", 980, 310, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [
-          { x: 470, y: 600, w: 60, h: 20, type: 'spike' },
-          { x: 860, y: 600, w: 60, h: 20, type: 'lava' }
+
+        hazards: [ 
+          { x: 470, y: 600, w: 60, h: 20, type: 'spike' }, 
+          { x: 860, y: 600, w: 60, h: 20, type: 'lava' } 
         ]
+
       },
       {
         name: "JS", hint: "correct JS words",
         plats: [[0, 620, 1400, 80], [200, 520, 160, 16], [420, 460, 160, 16], [640, 400, 160, 16], [860, 460, 160, 16], [1080, 520, 120, 16]],
         toks: [
           ["function()", 240, 480, 1, 0, Math.random() * Math.PI * 2],
-          ["functon()", 320, 480, 0, 0, Math.random() * Math.PI * 2],
+          ["functon()", 320, 590, 0, 0, Math.random() * Math.PI * 2],
           ["let", 500, 420, 1, 0, Math.random() * Math.PI * 2],
           ["lett", 580, 420, 0, 0, Math.random() * Math.PI * 2],
           ["if()", 720, 360, 1, 0, Math.random() * Math.PI * 2],
           ["iff()", 800, 360, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [
-          { x: 310, y: 600, w: 60, h: 20, type: 'water' },
-          { x: 510, y: 600, w: 60, h: 20, type: 'spike' },
-          { x: 910, y: 600, w: 60, h: 20, type: 'lava' }
+        hazards: [ 
+          { x: 310, y: 600, w: 60, h: 20, type: 'water' }, 
+          { x: 510, y: 600, w: 60, h: 20, type: 'spike' }, 
+          { x: 910, y: 600, w: 60, h: 20, type: 'lava' } 
         ]
+
       },
       {
         name: "PHP", hint: "PHP basics",
@@ -297,10 +305,11 @@
           ["<?php", 920, 400, 1, 0, Math.random() * Math.PI * 2],
           ["<php", 980, 400, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [
-          { x: 500, y: 600, w: 60, h: 20, type: 'lava' },
-          { x: 740, y: 600, w: 60, h: 20, type: 'water' }
+        hazards: [ 
+          { x: 500, y: 600, w: 60, h: 20, type: 'lava' }, 
+          { x: 740, y: 600, w: 60, h: 20, type: 'water' } 
         ]
+
       },
       {
         name: "Python", hint: "Python keywords",
@@ -313,10 +322,11 @@
           ["for", 860, 280, 1, 0, Math.random() * Math.PI * 2],
           ["foreach", 940, 280, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [
-          { x: 420, y: 600, w: 60, h: 20, type: 'spike' },
-          { x: 720, y: 600, w: 60, h: 20, type: 'water' }
+        hazards: [ 
+          { x: 420, y: 600, w: 60, h: 20, type: 'spike' }, 
+          { x: 720, y: 600, w: 60, h: 20, type: 'water' } 
         ]
+
       },
       {
         name: "C++", hint: "final level",
@@ -329,18 +339,19 @@
           ["for()", 590, 360, 1, 0, Math.random() * Math.PI * 2],
           ["loop()", 670, 360, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [
-          { x: 470, y: 600, w: 60, h: 20, type: 'water' },
-          { x: 870, y: 600, w: 60, h: 20, type: 'lava' }
+        hazards: [ 
+          { x: 470, y: 600, w: 60, h: 20, type: 'water' }, 
+          { x: 870, y: 600, w: 60, h: 20, type: 'lava' } 
         ]
+
       }
     ];
 
-  
+
     levels.forEach(level => {
       if (level.plats.length > 0) {
         level.plats[0][0] = 0;
-        level.plats[0][2] = W;
+        level.plats[0][2] = 1400;
       }
     });
 
@@ -354,38 +365,42 @@
     window.addEventListener("keyup", e => { keyState[e.code] = false; });
 
     const mobileKeys = {
-  "p1-left":"KeyA",
-  "p1-jump":"KeyW",
-  "p1-right":"KeyD",
-  "p2-left":"ArrowLeft",
-  "p2-jump":"ArrowUp",
-  "p2-right":"ArrowRight"
-};
+      "p1-left": "KeyA",
+      "p1-jump": "KeyW",
+      "p1-right": "KeyD",
+      "p2-left": "ArrowLeft",
+      "p2-jump": "ArrowUp",
+      "p2-right": "ArrowRight"
+    };
 
-Object.keys(mobileKeys).forEach(id=>{
-  const btn=document.getElementById(id);
-  if(!btn) return;
-  btn.addEventListener("touchstart",e=>{
-    e.preventDefault();
-    keyState[mobileKeys[id]]=true;
-  });
-  btn.addEventListener("touchend",e=>{
-    e.preventDefault();
-    keyState[mobileKeys[id]]=false;
-  });
-  btn.addEventListener("mousedown",()=>keyState[mobileKeys[id]]=true);
-  btn.addEventListener("mouseup",()=>keyState[mobileKeys[id]]=false);
-});
+    Object.keys(mobileKeys).forEach(id => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.addEventListener("touchstart", e => {
+        e.preventDefault();
+        keyState[mobileKeys[id]] = true;
+      });
+      btn.addEventListener("touchend", e => {
+        e.preventDefault();
+        keyState[mobileKeys[id]] = false;
+      });
+      btn.addEventListener("mousedown", () => keyState[mobileKeys[id]] = true);
+      btn.addEventListener("mouseup", () => keyState[mobileKeys[id]] = false);
+    });
 
     function startLevel(i) {
-    
+
       if (typeof i === 'undefined' || i === null) i = cur || 0;
       cur = i;
       curLevel = JSON.parse(JSON.stringify(levels[i]));
-     
+
       curLevel.toks.forEach(t => { if (typeof t[5] === 'undefined') t[5] = Math.random() * Math.PI * 2; t[4] = 0; });
-   
-      if (curLevel.plats && curLevel.plats.length > 0) curLevel.plats[0][2] = window.innerWidth;
+
+
+      if (curLevel.plats && curLevel.plats.length > 0) {
+        curLevel.plats[0][0] = 0;
+        curLevel.plats[0][2] = 1400;
+      }
 
       players.forEach((p, j) => {
         p.x = startPositions[j].x;
@@ -411,70 +426,86 @@ Object.keys(mobileKeys).forEach(id=>{
 
 
     function draw() {
-      ctx.clearRect(0, 0, W, H);
-
-    
-      ctx.fillStyle = "#223248";
-      for (const p of curLevel.plats) ctx.fillRect(p[0], p[1], p[2], p[3]);
-
-      for (const h of curLevel.hazards) {
-        if (h.type === 'lava') {
-          ctx.fillStyle = "#b91c1c";
-          ctx.fillRect(h.x, h.y, h.w, h.h);
-          ctx.fillStyle = "#f97316";
-          ctx.fillRect(h.x, h.y + Math.floor(h.h / 3), h.w, Math.floor(h.h / 3));
-        } else if (h.type === 'water') {
-          ctx.fillStyle = "#0ea5e9";
-          ctx.fillRect(h.x, h.y, h.w, h.h);
-          ctx.fillStyle = "#60a5fa";
-          ctx.fillRect(h.x, h.y + Math.floor(h.h / 3), h.w, Math.floor(h.h / 3));
-        } else if (h.type === 'spike') {
-          const spikeW = 12;
-          ctx.fillStyle = "#ef4444";
-          for (let sx = h.x; sx < h.x + h.w; sx += spikeW) {
-            ctx.beginPath();
-            ctx.moveTo(sx, h.y + h.h);
-            ctx.lineTo(sx + spikeW / 2, h.y);
-            ctx.lineTo(sx + spikeW, h.y + h.h);
-            ctx.closePath();
-            ctx.fill();
-          }
-        }
-      }
-
-   
-      ctx.font = "14px monospace";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      for (const t of curLevel.toks) {
-        if (t[4]) continue;
-     
-        const phase = t[5] || 0;
-        const amp = 8;
-        const floatY = t[2] + Math.sin(time * 0.06 + phase) * amp;
-    
-        ctx.fillStyle = "rgba(240,240,240,0.06)";
-        ctx.fillRect(t[1] - 44, floatY - 16, 88, 28);
-      
-        ctx.fillStyle = "#f3f4f6";
-        ctx.fillText(t[0], t[1], floatY);
- 
-        ctx.strokeStyle = "rgba(0,0,0,0.3)";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(t[1] - 44, floatY - 16, 88, 28);
-      }
+  ctx.clearRect(0, 0, W, H);
 
  
-      for (const p of players) {
-        ctx.fillStyle = p.color;
-        ctx.fillRect(p.x, p.y, p.w, p.h);
-        if (p.invuln > 0) {
-          ctx.strokeStyle = "#ffffff";
-          ctx.lineWidth = 2;
-          ctx.strokeRect(p.x - 2, p.y - 2, p.w + 4, p.h + 4);
-        }
-      }
+  
+  ctx.fillStyle = "#223248";
+  for (const p of curLevel.plats) {
+    ctx.fillRect(p[0] * scaleX, p[1] * scaleY, p[2] * scaleX, p[3] * scaleY);
+  }
+
+ 
+  
+  for (const h of curLevel.hazards) { 
+    if (h.type === 'lava') { 
+      ctx.fillStyle = "#b91c1c"; 
+      ctx.fillRect(h.x * scaleX, h.y * scaleY, h.w * scaleX, h.h * scaleY); 
+      ctx.fillStyle = "#f97316"; 
+      ctx.fillRect(h.x * scaleX, (h.y + Math.floor(h.h / 3)) * scaleY, h.w * scaleX, Math.floor(h.h / 3) * scaleY); 
+    } 
+    else if (h.type === 'water') { 
+      ctx.fillStyle = "#0ea5e9"; 
+      ctx.fillRect(h.x * scaleX, h.y * scaleY, h.w * scaleX, h.h * scaleY); 
+      ctx.fillStyle = "#60a5fa"; 
+      ctx.fillRect(h.x * scaleX, (h.y + Math.floor(h.h / 3)) * scaleY, h.w * scaleX, Math.floor(h.h / 3) * scaleY); 
+    } 
+    else if (h.type === 'spike') { 
+      const spikeW = 12; 
+      ctx.fillStyle = "#ef4444"; 
+
+      for (let sx = h.x; sx < h.x + h.w; sx += spikeW) { 
+        ctx.beginPath(); 
+        ctx.moveTo(sx * scaleX, (h.y + h.h) * scaleY); 
+        ctx.lineTo((sx + spikeW / 2) * scaleX, h.y * scaleY); 
+        ctx.lineTo((sx + spikeW) * scaleX, (h.y + h.h) * scaleY); 
+        ctx.closePath(); 
+        ctx.fill(); 
+      } 
+    } 
+  }
+
+  
+  
+  ctx.font = "14px monospace";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  for (const t of curLevel.toks) {
+    if (t[4]) continue;
+
+    const phase = t[5] || 0;
+    const amp = 8;
+    const floatY = t[2] + Math.sin(time * 0.06 + phase) * amp;
+
+    ctx.fillStyle = "rgba(240,240,240,0.06)";
+    ctx.fillRect((t[1] - 44) * scaleX, (floatY - 16) * scaleY, 88 * scaleX, 28 * scaleY);
+
+    ctx.fillStyle = "#f3f4f6";
+    ctx.fillText(t[0], t[1] * scaleX, floatY * scaleY);
+
+    ctx.strokeStyle = "rgba(0,0,0,0.3)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect((t[1] - 44) * scaleX, (floatY - 16) * scaleY, 88 * scaleX, 28 * scaleY);
+  }
+
+
+  
+  for (const p of players) {
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x * scaleX, p.y * scaleY, p.w * scaleX, p.h * scaleY);
+
+    if (p.invuln > 0) {
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(
+        (p.x - 2) * scaleX,
+        (p.y - 2) * scaleY,
+        (p.w + 4) * scaleX,
+        (p.h + 4) * scaleY
+      );
     }
+  }
+}
 
     function respawnPlayer(index) {
       const p = players[index];
@@ -487,7 +518,7 @@ Object.keys(mobileKeys).forEach(id=>{
       p.invuln = INVULN_FRAMES;
     }
 
-   
+
     function physics(p, index) {
       if (p.invuln > 0) p.invuln--;
 
@@ -530,66 +561,61 @@ Object.keys(mobileKeys).forEach(id=>{
         }
       }
 
- 
-      if (p.y > H) {
-        if (p.invuln > 0) {
-          p.x = startPositions[index].x;
-          p.y = startPositions[index].y;
-          p.vx = 0; p.vy = 0;
-          return;
-        }
-        respawnPlayer(index);
-        return;
-      }
+      if (p.invuln <= 0) 
+      { 
+        for (const h of curLevel.hazards) 
+        { 
+          const box = { x: h.x, y: h.y, w: h.w, h: h.h }; 
+          if (collide(p, box)) { if (h.type === 'spike') 
+          { 
+            respawnPlayer(index); 
+            return; 
 
-      if (p.invuln <= 0) {
-        for (const h of curLevel.hazards) {
-          const box = { x: h.x, y: h.y, w: h.w, h: h.h };
-          if (collide(p, box)) {
-            if (h.type === 'spike') {
-      
-              respawnPlayer(index);
-              return;
-            }
-            if (h.type === 'lava') {
-       
-              if (index === 1) {
-                respawnPlayer(index);
-                return;
-              }
-            }
-            if (h.type === 'water') {
-         
-              if (index === 0) {
-                respawnPlayer(index);
-                return;
-              }
-            }
-          }
-        }
-      }
-
-      p.x = clamp(p.x, 0, W - p.w);
+          } 
+          if (h.type === 'lava') 
+          { 
+            if (index === 1) 
+            { 
+              respawnPlayer(index); 
+              return; 
+            } 
+          } 
+          if (h.type === 'water') 
+          { 
+            if (index === 0) 
+            { 
+              respawnPlayer(index); 
+              return; 
+            } 
+          } 
+        } 
+      } 
     }
 
- 
+
+
+
+      p.x = clamp(p.x, 0, 1400 - p.w);
+    }
+
+
     function checkTokens() {
       for (const [pi, p] of players.entries()) {
         for (const t of curLevel.toks) {
           if (t[4]) continue;
-       
+
           const floatY = t[2] + Math.sin(time * 0.06 + (t[5] || 0)) * 8;
           const box = { x: t[1] - 44, y: floatY - 16, w: 88, h: 28 };
           if (collide(p, box)) {
             t[4] = 1;
             if (t[3]) {
-            
+
               p.hearts = Math.min(maxHearts, p.hearts + 1);
             } else {
-           
+
               if (p.invuln <= 0) {
                 respawnPlayer(pi);
-           
+
               }
             }
             updateHearts();
@@ -630,7 +656,7 @@ Object.keys(mobileKeys).forEach(id=>{
       canvas.blur();
     }
 
-  
+
     function loop() {
       if (!curLevel) return requestAnimationFrame(loop);
       if (!paused) {
@@ -643,7 +669,7 @@ Object.keys(mobileKeys).forEach(id=>{
       requestAnimationFrame(loop);
     }
 
-   
+
     nextLevelBtn.onclick = () => {
       winModal.classList.remove("show");
       if (cur < levels.length - 1) startLevel(cur + 1);
@@ -652,15 +678,15 @@ Object.keys(mobileKeys).forEach(id=>{
     restartLevelBtn.onclick = () => { winModal.classList.remove("show"); startLevel(cur); };
     restartOnlyBtn.onclick = () => { loseModal.classList.remove("show"); startLevel(cur); };
 
-   
+
     window.addEventListener("load", () => {
-     
+
       W = window.innerWidth;
       H = window.innerHeight;
       canvas.width = W;
       canvas.height = H;
 
-     
+
       levels.forEach(level => {
         if (level.plats && level.plats.length > 0) {
           level.plats[0][0] = 0;
@@ -668,7 +694,7 @@ Object.keys(mobileKeys).forEach(id=>{
         }
       });
 
-    
+
       startLevel(0);
       canvas.focus();
       loop();
@@ -680,22 +706,22 @@ Object.keys(mobileKeys).forEach(id=>{
       canvas.width = W;
       canvas.height = H;
 
-      
+
       levels.forEach(level => {
         if (level.plats && level.plats.length > 0) {
           level.plats[0][2] = window.innerWidth;
         }
       });
 
-      
+
       if (curLevel && curLevel.plats && curLevel.plats.length > 0) {
-        curLevel.plats[0][2] = window.innerWidth;
+        curLevel.plats[0][2] = 1400;
       }
     });
 
 
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    
+
       setTimeout(() => {
         if (!curLevel) {
           W = window.innerWidth; H = window.innerHeight;
@@ -712,7 +738,7 @@ Object.keys(mobileKeys).forEach(id=>{
       }, 50);
     }
 
-   
+
     canvas.addEventListener('click', () => canvas.focus());
 
     quitChallenge.addEventListener('click', function () {
