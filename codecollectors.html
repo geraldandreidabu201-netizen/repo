@@ -282,10 +282,10 @@ hazards: [
         toks: [
           ["function()", 240, 480, 1, 0, Math.random() * Math.PI * 2],
           ["functon()", 320, 590, 0, 0, Math.random() * Math.PI * 2],
-          ["let", 500, 420, 1, 0, Math.random() * Math.PI * 2],
-          ["lett", 580, 420, 0, 0, Math.random() * Math.PI * 2],
+          ["let", 1100, 500, 1, 0, Math.random() * Math.PI * 2],
+          ["lett", 420, 440, 0, 0, Math.random() * Math.PI * 2],
           ["if()", 720, 360, 1, 0, Math.random() * Math.PI * 2],
-          ["iff()", 800, 360, 0, 0, Math.random() * Math.PI * 2]
+          ["iff()", 860, 440, 0, 0, Math.random() * Math.PI * 2]
         ],
         hazards: [ 
           { x: 310, y: 600, w: 60, h: 20, type: 'water' }, 
@@ -298,8 +298,6 @@ hazards: [
         name: "PHP", hint: "PHP basics",
         plats: [[0, 620, 1400, 80], [100, 520, 120, 16], [260, 440, 120, 16], [420, 360, 120, 16], [840, 440, 120, 16], [1000, 520, 120, 16]],
         toks: [
-          ["$var", 120, 480, 1, 0, Math.random() * Math.PI * 2],
-          ["var$", 200, 480, 0, 0, Math.random() * Math.PI * 2],
           ["echo", 320, 400, 1, 0, Math.random() * Math.PI * 2],
           ["eccho", 400, 400, 0, 0, Math.random() * Math.PI * 2],
           ["<?php", 920, 400, 1, 0, Math.random() * Math.PI * 2],
@@ -316,11 +314,11 @@ hazards: [
         plats: [[0, 620, 1400, 80], [220, 520, 200, 16], [500, 420, 200, 16], [800, 320, 200, 16]],
         toks: [
           ["def", 260, 480, 1, 0, Math.random() * Math.PI * 2],
-          ["defn", 360, 480, 0, 0, Math.random() * Math.PI * 2],
-          ["print()", 560, 380, 1, 0, Math.random() * Math.PI * 2],
-          ["printf()", 660, 380, 0, 0, Math.random() * Math.PI * 2],
+          ["defn", 360, 600, 0, 0, Math.random() * Math.PI * 2],
+          ["print()", 560, 600, 1, 0, Math.random() * Math.PI * 2],
+          ["printf()", 600, 380, 0, 0, Math.random() * Math.PI * 2],
           ["for", 860, 280, 1, 0, Math.random() * Math.PI * 2],
-          ["foreach", 940, 280, 0, 0, Math.random() * Math.PI * 2]
+          ["foreach", 940, 600, 0, 0, Math.random() * Math.PI * 2]
         ],
         hazards: [ 
           { x: 420, y: 600, w: 60, h: 20, type: 'spike' }, 
@@ -333,11 +331,11 @@ hazards: [
         plats: [[0, 620, 1400, 80], [150, 520, 140, 16], [350, 460, 140, 16], [560, 400, 120, 16], [760, 340, 120, 16], [960, 280, 140, 16]],
         toks: [
           ["int", 170, 480, 1, 0, Math.random() * Math.PI * 2],
-          ["integer", 250, 480, 0, 0, Math.random() * Math.PI * 2],
-          ["cout<<", 390, 420, 1, 0, Math.random() * Math.PI * 2],
+          ["integer", 250, 600, 0, 0, Math.random() * Math.PI * 2],
+          ["cout<<", 390, 600, 1, 0, Math.random() * Math.PI * 2],
           ["cout>>", 470, 420, 0, 0, Math.random() * Math.PI * 2],
           ["for()", 590, 360, 1, 0, Math.random() * Math.PI * 2],
-          ["loop()", 670, 360, 0, 0, Math.random() * Math.PI * 2]
+          ["loop()", 670, 600, 0, 0, Math.random() * Math.PI * 2]
         ],
         hazards: [ 
           { x: 470, y: 600, w: 60, h: 20, type: 'water' }, 
