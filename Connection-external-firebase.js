@@ -4,14 +4,14 @@ import { getDatabase, set, ref, get, remove, update } from "https://www.gstatic.
 
 
 const firebaseConfig = {
- apiKey: "AIzaSyAPPyxEwclwml-IWS3sAzincKEpADlGHOI",
-  authDomain: "my-game-creation.firebaseapp.com",
-  databaseURL: "https://my-game-creation-default-rtdb.firebaseio.com/",
-  projectId: "my-game-creation",
-  storageBucket: "my-game-creation.firebasestorage.app",
-  messagingSenderId: "306552972174",
-  appId: "1:306552972174:web:3c007fa5cccdc332d9badf",
-  measurementId: "G-3N7GB2L3B0"
+ apiKey: "AIzaSyDQOhmv0OH62OMDc_QeoDn9GTwdMmfep2U",
+  authDomain: "game-428f1.firebaseapp.com",
+  databaseURL: "https://game-428f1-default-rtdb.firebaseio.com",
+  projectId: "game-428f1",
+  storageBucket: "game-428f1.firebasestorage.app",
+  messagingSenderId: "823488500805",
+  appId: "1:823488500805:web:74574f77a25762bde03f2c",
+  measurementId: "G-X2ZZKDBNTB"
 };
 
 const app = initializeApp(firebaseConfig);
