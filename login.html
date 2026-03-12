@@ -280,25 +280,17 @@ position: relative;
     import { auth, signInWithEmailAndPassword } from './Connection-external-firebase.js';
     import { db, ref, set, get, update } from './Connection-external-firebase.js';
 
-
-
-  history.pushState(null, null, location.href);
-    window.onpopstate = function () {
-        history.go(1);
-    };
-
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('languageselected');
 
       let accountcode="";
 
-
-    
     let modal = document.getElementById('modalOverlay');
     let modaltitle = document.getElementById('modalTitle');
     let modalmessage = document.getElementById('modalMessage');
 
     
+
 
 
     
@@ -341,6 +333,7 @@ const buttonText = document.getElementById("buttonText");
       if(username=="admin#123456789" && password=="admin123456789")
       {
       localStorage.setItem("loggedInAdmin","admin");
+      localStorage.setItem("loggedIn", "admin");
         window.location.href = "teacher.html";
       }
 
@@ -409,6 +402,11 @@ let forloopname=userkey.Name;
 
 
                         if (usersholder.Email == email) {
+
+                          if(usersholder.Verified=="No")
+                        {
+                          set(ref(db, `Users/${key}/Verified`), "Yes");
+                        }
 
                           localStorage.setItem("loggedIn", accountcode);
                           let currentUser = accountcode.slice(0, -3);

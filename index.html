@@ -230,13 +230,6 @@ if (localStorage.getItem('loggedIn') == null) {
   window.location.href = 'login.html';
 }
 
- history.pushState(null, "", location.href);
-
- window.addEventListener("popstate", function () {
-   
-    window.location.replace("/login.html");
-  });
-
 if (localStorage.getItem('languageselected') == "tl") {
 
 

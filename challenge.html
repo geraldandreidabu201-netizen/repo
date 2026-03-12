@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Challenge Mode</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  height:100%;
+  width:100%;
+  font-family:'Orbitron',sans-serif;
+  background: radial-gradient(circle at center,#001f3f,#000,#002f4b);
+  overflow:hidden;
+  color:#fff;
+}
+
+
+#loadingScreen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center,#000,#001f3f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 9999;
+  transition: opacity 1s ease;
+}
+
+.loading-text {
+  color: #00fff7;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7;
+  animation: glowPulse 2s infinite ease-in-out;
+  width: 65vw;          
+  text-align: center;   
+  margin: 0 auto;        
+}
+
+
+.loading-bar {
+  width: 200px;
+  height: 8px;
+  border: 1px solid #00fff7;
+  border-radius: 5px;
+  margin-top: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 10px #00fff7;
+}
+.loading-bar-inner {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #00fff7, #0ff, #00fff7);
+  animation: loadProgress 4s forwards ease-in-out;
+}
+@keyframes glowPulse {
+  0%,100% { text-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7; }
+  50% { text-shadow: 0 0 50px #0ff, 0 0 100px #0ff; }
+}
+@keyframes loadProgress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+
+canvas#bgCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle at center,#001f3f,#000,#002f4b);
+  background-size: 300% 300%;
+  animation: bgShift 20s ease infinite;
+}
+@keyframes bgShift {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+.back-arrow {
+  position:absolute; left:20px; top:20px;
+  font-size:2rem; color:#00fff7; text-decoration:none; z-index:30;
+  transition:transform .18s ease,color .18s ease;
+}
+.back-arrow:hover{ transform:translateX(-6px); color:#fff }
+
+.center-wrapper {
+  position:relative;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+
+.challenge-title {
+  position:absolute;
+  z-index:20;
+  pointer-events:none;
+  color:#00fff7;
+  font-size:clamp(1.5rem,3.5vw,3rem);
+  text-align:center;
+  text-shadow:0 0 18px #00fff7, 0 0 36px rgba(0,255,247,0.25);
+  letter-spacing:2px;
+  animation:glowPulse 3s ease-in-out infinite;
+}
+
+.option-card {
+  position:absolute;
+  width:clamp(70px,12vw,140px);
+  height:clamp(70px,12vw,140px);
+  border-radius:18px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:700; text-align:center;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(0, 255, 255, 0.679);
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 20px rgba(0,255,255,0.25);
+  cursor:pointer;
+  transition:transform .2s ease,box-shadow .3s ease;
+  pointer-events:auto;
+  font-size:clamp(0.7rem,1.6vw,1rem);
+}
+.option-card:hover {
+  transform:scale(1.15);
+  box-shadow:0 0 40px #00fff7, 0 0 80px rgba(0,255,255,0.2);
+}
+.locked {
+  filter:grayscale(1);
+  opacity:.35;
+  cursor:not-allowed;
+}
+
+
+.tutorial-btn{
+  position:absolute;
+  right:20px;
+  top:20px;
+  z-index:50;
+  padding:8px 16px;
+  border:2px solid #00fff7;
+  border-radius:10px;
+  color:#00fff7;
+  font-size:0.9rem;
+  text-decoration:none;
+  transition:all .3s ease;
+  box-shadow:0 0 10px rgba(0,255,255,0.4);
+}
+.tutorial-btn:hover{
+  background:#00fff7;
+  color:#000;
+  box-shadow:0 0 25px #00fff7;
+}
+
+
+@media (max-width:480px){
+  .challenge-title{ font-size:1.3rem; line-height:1.4 }
+}
+</style>
+</head>
+<body>
+
+  <div id="loadingScreen">
+    <div class="loading-text" id="loadingname">LOADING...</div>
+    <div class="loading-bar"><div class="loading-bar-inner"></div></div>
+  </div>
+
+  <a class="back-arrow" href="index.html">←</a>
+  <a class="tutorial-btn" href="tutorials.html" id="tutorialbtn">❓ Tutorial</a>
+  <canvas id="bgCanvas"></canvas>
+
+  <div class="center-wrapper" style="opacity:0; transition:opacity 1s ease;" id="gameWrapper">
+    <h1 class="challenge-title" id="challengeTitle">CHALLENGE<br>MODE</h1>
+    
+    <div class="option-card challenge-1" data-challenge="1">Match Battle</div>
+    <div class="option-card challenge-2" data-challenge="2">Match Battle 2</div>
+    <div class="option-card challenge-3" data-challenge="3">Code Collectors</div>
+    <div class="option-card challenge-4 locked" data-challenge="4">Coming Soon</div>
+    <div class="option-card challenge-5 locked" data-challenge="5">Coming Soon</div>
+    <div class="option-card challenge-6 locked" data-challenge="6">Coming Soon</div>
+  </div>
+
+  <audio id="hoverSound" src="https://cdn.pixabay.com/download/audio/2022/03/02/audio_62b05e60a2.mp3?filename=sci-fi-interface-hover-99103.mp3"></audio>
+  <audio id="clickSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9d2b56a939.mp3?filename=click-124467.mp3"></audio>
+
+<script type="module">
+
+if (localStorage.getItem('loggedIn') == null) {
+  window.location.href = 'login.html';
+}
+
+import { db, ref, get } from './Connection-external-firebase.js';
+
+
+if (!localStorage.getItem('tutorialSeen')) {
+  localStorage.setItem('tutorialSeen', 'true');
+  window.location.href = 'tutorials.html';
+}
+
+
+
+
+const name = localStorage.getItem('loggedIn');
+const hoverSound = document.getElementById('hoverSound');
+const clickSound = document.getElementById('clickSound');
+const cards = Array.from(document.querySelectorAll('.option-card'));
+const titleEl = document.getElementById('challengeTitle');
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      if (!card.classList.contains('locked')) {
+        hoverSound.currentTime = 0;
+        hoverSound.play();
+      }
+    });
+    card.addEventListener('click', () => {
+      if (card.classList.contains('locked')) {
+        card.animate([{ transform:'translateX(0)' },{ transform:'translateX(-6px)' },
+                      { transform:'translateX(6px)' },{ transform:'translateX(0)' }],{ duration:300 });
+        return;
+      }
+      clickSound.currentTime = 0;
+      clickSound.play();
+      card.animate([{ transform:'scale(1)' },{ transform:'scale(1.25)' },{ transform:'scale(1)' }],{ duration:260 });
+      setTimeout(()=> openChallenge(card.dataset.challenge), 300);
+    });
+  });
+
+  if (localStorage.getItem('languageselected') === "tl")
+  {
+    titleEl.textContent = "Modo ng Pagsubok";
+  document.getElementById("tutorialbtn").textContent = "Aralin";
+  document.getElementById("loadingname").textContent = "Maghintay Matapos...";
+  }
+
+});
+
+
+
+
+function openChallenge(challengeNumber){
+  const pages = {
+    1: "matchbattle.html",
+    2: "matchbattle2.html",
+    3: "codecollectors.html",
+    4: "Coming.html",
+    5: "Coming.html",
+    6: "Coming.html"
+  };
+  window.location.href = pages[challengeNumber];
+}
+
+
+let radius, centerX, centerY;
+let rotationSpeed = 0.02;
+let globalAngle = 0;
+
+function setupOrbit(){
+  centerX = window.innerWidth / 2;
+  centerY = window.innerHeight / 2;
+  radius = Math.min(window.innerWidth, window.innerHeight) * 0.4;
+}
+function updatePositions(){
+  const n = cards.length;
+  for (let i=0; i<n; i++){
+    const baseAngle = i * (360 / n);
+    const angle = (baseAngle + globalAngle) * Math.PI / 180;
+    const x = centerX + radius * Math.cos(angle);
+    const y = centerY + radius * Math.sin(angle);
+    const el = cards[i];
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    el.style.left = (x - w/2) + 'px';
+    el.style.top = (y - h/2) + 'px';
+    el.style.transform = `translateZ(0) rotate(${-globalAngle}deg)`;
+  }
+}
+let lastTime = performance.now();
+function animateOrbit(now){
+  const dt = now - lastTime;
+  lastTime = now;
+  globalAngle = (globalAngle + rotationSpeed * (dt/16.67)) % 360;
+  updatePositions();
+  requestAnimationFrame(animateOrbit);
+}
+window.addEventListener('resize', ()=>{ setupOrbit(); updatePositions(); });
+setupOrbit();
+requestAnimationFrame(animateOrbit);
+
+cards.forEach(c=>{
+  c.addEventListener('mouseenter', ()=> rotationSpeed = 0);
+  c.addEventListener('mouseleave', ()=> rotationSpeed = 0.02);
+});
+
+
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+class Particle {
+  constructor(){
+    this.x = Math.random()*canvas.width;
+    this.y = Math.random()*canvas.height;
+    this.size = Math.random()*2 + 1.5;
+    this.speedX = (Math.random()-0.5)*0.3;
+    this.speedY = (Math.random()-0.5)*0.3;
+    this.color = `hsl(${Math.random()*60 + 180}, 100%, 65%)`;
+  }
+  update(){
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if(this.x<0||this.x>canvas.width) this.speedX*=-1;
+    if(this.y<0||this.y>canvas.height) this.speedY*=-1;
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.shadowColor=this.color;
+    ctx.shadowBlur=25;
+    ctx.fillStyle=this.color;
+    ctx.fill();
+  }
+}
+function initParticles(){
+  particles=[];
+  for(let i=0;i<100;i++) particles.push(new Particle());
+}
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{p.update();p.draw();});
+  requestAnimationFrame(animateParticles);
+}
+initParticles();
+animateParticles();
+
+
+window.addEventListener('load', () => {
+  const loadingScreen = document.getElementById('loadingScreen');
+  const gameWrapper = document.getElementById('gameWrapper');
+  setTimeout(() => {
+    loadingScreen.style.opacity = '0';
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+      gameWrapper.style.opacity = '1';
+    }, 1000);
+  }, 3000);
+});
+</script>
+</body>
+</html>

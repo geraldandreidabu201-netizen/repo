@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Code Quest — Fireboy & Watergirl Style (Floating Codes) - Fixed Floor</title>
+  <style>
+ body {
+  margin: 0;
+  background: #0b1220;
+  color: #eaf2ff;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+  touch-action: none;
+}
+
+    canvas {
+      background: #0f1724;
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      outline: none;
+    }
+
+    .ui {
+      position: fixed;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .box {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      min-width: 130px;
+    }
+
+    button {
+      background: #0ea5b3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .info {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      color: #a7c0f7;
+    }
+
+   
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: #0f1724;
+      color: #fff;
+      padding: 24px 28px;
+      border-radius: 10px;
+      text-align: center;
+      width: 320px;
+      box-shadow: 0 0 10px #0ea5b3;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 12px;
+    }
+
+    .modal-content button {
+      margin: 8px;
+      padding: 8px 16px;
+    }
+
+.mobile-controls{
+  position:fixed;
+  bottom:20px;
+  width:100%;
+  justify-content:space-around;
+  z-index:20;
+  display:none;
+}
+
+
+@media (max-width: 1024px){
+  .mobile-controls{
+    display:flex;
+  }
+}
+
+.mobile-controls button{
+  width:60px;
+  height:60px;
+  font-size:20px;
+  border-radius:50%;
+  max-width:15vw;
+  max-height:15vw;
+}
+
+
+@media (max-width: 1024px) and (orientation: landscape){
+
+  .mobile-controls{
+    display:flex;
+  }
+
+  canvas{
+    transform: scale(0.9);
+    transform-origin: top left;
+  }
+
+}
+
+@media (orientation: portrait){
+  .mobile-controls{
+    display:none;
+  }
+}
+  </style>
+</head>
+
+<body>
+  <canvas id="game" tabindex="0"></canvas>
+
+  <div class="ui">
+    <div class="box" id="p1hearts">P1 ❤️❤️❤️❤️❤️</div>
+    <div class="box" id="p2hearts">P2 ❤️❤️❤️❤️❤️</div>
+    <div class="box" id="msg">Level 1 — HTML</div>
+    <div><button id="restart">Restart</button></div>
+  </div>
+
+  <div class="info">P1: A D W P2: ← → ↑</div>
+
+
+  <div class="modal" id="winModal">
+    <div class="modal-content">
+      <h2>🎉 Level Completed!</h2>
+      <p>Choose what to do next:</p>
+      <button id="nextLevel">Next Level</button>
+      <button id="restartLevel">Restart Level</button>
+      <button id="quitChallenge">Quit Challenge</button>
+    </div>
+  </div>
+
+  <div class="modal" id="loseModal">
+    <div class="modal-content">
+      <h2>💀 A Player Died!</h2>
+      <p>Try again?</p>
+      <button id="restartOnly">Restart</button>
+    </div>
+  </div>
+
+  <div class="mobile-controls">
+  <button id="p1-left">◀</button>
+  <button id="p1-jump">▲</button>
+  <button id="p1-right">▶</button>
+  <button id="p2-left">◀</button>
+  <button id="p2-jump">▲</button>
+  <button id="p2-right">▶</button>
+</div>
+
+  <script type="module">
+    import { db, ref, update } from './Connection-external-firebase.js';
+    let challengeName = "Code Collectors";
+
+    if (localStorage.getItem('loggedIn') == null) {
+      window.location.href = 'login.html';
+    }
+
+    let name = localStorage.getItem('loggedIn');
+
+ 
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    let W = window.innerWidth, H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+    canvas.focus();
+
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+    function collide(a, b) { return !(a.x + a.w < b.x || a.x > b.x + b.w || a.y + a.h < b.y || a.y > b.y + b.h); }
+
+
+    const players = [
+      { x: 80, y: 400, w: 36, h: 50, color: "#ef4444", vx: 0, vy: 0, left: false, right: false, ground: false, hearts: 5, _jumpConsumed: false, invuln: 0 },
+      { x: 150, y: 400, w: 36, h: 50, color: "#3b82f6", vx: 0, vy: 0, left: false, right: false, ground: false, hearts: 5, _jumpConsumed: false, invuln: 0 }
+    ];
+
+    const startPositions = [{ x: 80, y: 400 }, { x: 150, y: 400 }];
+    const maxHearts = 5;
+    const gravity = 0.7;
+    const jumpPower = -13;
+    const speed = 4;
+    const INVULN_FRAMES = 40;
+
+    const p1UI = document.getElementById("p1hearts");
+    const p2UI = document.getElementById("p2hearts");
+    const msg = document.getElementById("msg");
+
+    const winModal = document.getElementById("winModal");
+    const loseModal = document.getElementById("loseModal");
+    const nextLevelBtn = document.getElementById("nextLevel");
+    const restartLevelBtn = document.getElementById("restartLevel");
+    const restartOnlyBtn = document.getElementById("restartOnly");
+    const quitChallenge = document.getElementById("quitChallenge");
+
+    document.getElementById("restart").addEventListener('click', () => startLevel(cur));
+
+
+    const levels = [
+      {
+        name: "HTML", hint: "collect correct tags",
+        plats: [[0, 620, 1400, 80], [260, 520, 220, 16], [540, 440, 180, 16], [820, 520, 220, 16], [1100, 360, 160, 16]],
+        toks: [
+          ["<div>", 300, 480, 1, 0, Math.random() * Math.PI * 2],
+          ["<divv>", 500, 480, 0, 0, Math.random() * Math.PI * 2],
+          ["<p>", 700, 400, 1, 0, Math.random() * Math.PI * 2],
+          ["<tagg>", 920, 400, 0, 0, Math.random() * Math.PI * 2],
+          ["<h1>", 1160, 480, 1, 0, Math.random() * Math.PI * 2],
+          ["<h7>", 1280, 320, 0, 0, Math.random() * Math.PI * 2]
+        ],
+        hazards: [
+          { x: 440, y: 600, w: 60, h: 20, type: 'lava' },
+          { x: 720, y: 600, w: 60, h: 20, type: 'spike' },
+          { x: 980, y: 600, w: 60, h: 20, type: 'water' }
+        ]
+      },
+      {
+        name: "CSS", hint: "css props",
+        plats: [[0, 620, 1400, 80], [150, 520, 160, 16], [350, 430, 160, 16], [560, 350, 160, 16], [780, 430, 160, 16], [980, 520, 160, 16]],
+        toks: [
+          ["color:", 200, 480, 1, 0, Math.random() * Math.PI * 2],
+          ["colr:", 360, 480, 0, 0, Math.random() * Math.PI * 2],
+          ["margin:", 440, 390, 1, 0, Math.random() * Math.PI * 2],
+          ["margn:", 640, 390, 0, 0, Math.random() * Math.PI * 2],
+          ["#id", 820, 310, 1, 0, Math.random() * Math.PI * 2],
+          ["#idd", 980, 310, 0, 0, Math.random() * Math.PI * 2]
+        ],
+        hazards: [
+          { x: 470, y: 600, w: 60, h: 20, type: 'spike' },
+          { x: 860, y: 600, w: 60, h: 20, type: 'lava' }
+        ]
+      },
+      {
+        name: "JS", hint: "correct JS words",
+        plats: [[0, 620, 1400, 80], [200, 520, 160, 16], [420, 460, 160, 16], [640, 400, 160, 16], [860, 460, 160, 16], [1080, 520, 120, 16]],
+        toks: [
+          ["function()", 240, 480, 1, 0, Math.random() * Math.PI * 2],
+          ["functon()", 320, 480, 0, 0, Math.random() * Math.PI * 2],
+          ["let", 500, 420, 1, 0, Math.random() * Math.PI * 2],
+          ["lett", 580, 420, 0, 0, Math.random() * Math.PI * 2],
+          ["if()", 720, 360, 1, 0, Math.random() * Math.PI * 2],
+          ["iff()", 800, 360, 0, 0, Math.random() * Math.PI * 2]
+        ],
+        hazards: [
+          { x: 310, y: 600, w: 60, h: 20, type: 'water' },
+          { x: 510, y: 600, w: 60, h: 20, type: 'spike' },
+          { x: 910, y: 600, w: 60, h: 20, type: 'lava' }
+        ]
+      },
+      {
+        name: "PHP", hint: "PHP basics",
+        plats: [[0, 620, 1400, 80], [100, 520, 120, 16], [260, 440, 120, 16], [420, 360, 120, 16], [840, 440, 120, 16], [1000, 520, 120, 16]],
+        toks: [
+          ["$var", 120, 480, 1, 0, Math.random() * Math.PI * 2],
+          ["var$", 200, 480, 0, 0, Math.random() * Math.PI * 2],
+          ["echo", 320, 400, 1, 0, Math.random() * Math.PI * 2],
+          ["eccho", 400, 400, 0, 0, Math.random() * Math.PI * 2],
+          ["<?php", 920, 400, 1, 0, Math.random() * Math.PI * 2],
+          ["<php", 980, 400, 0, 0, Math.random() * Math.PI * 2]
+        ],
+        hazards: [
+          { x: 500, y: 600, w: 60, h: 20, type: 'lava' },
+          { x: 740, y: 600, w: 60, h: 20, type: 'water' }
+        ]
+      },
+      {
+        name: "Python", hint: "Python keywords",
+        plats: [[0, 620, 1400, 80], [220, 520, 200, 16], [500, 420, 200, 16], [800, 320, 200, 16]],
+        toks: [
+          ["def", 260, 480, 1, 0, Math.random() * Math.PI * 2],
+          ["defn", 360, 480, 0, 0, Math.random() * Math.PI * 2],
+          ["print()", 560, 380, 1, 0, Math.random() * Math.PI * 2],
+          ["printf()", 660, 380, 0, 0, Math.random() * Math.PI * 2],
+          ["for", 860, 280, 1, 0, Math.random() * Math.PI * 2],
+          ["foreach", 940, 280, 0, 0, Math.random() * Math.PI * 2]
+        ],
+        hazards: [
+          { x: 420, y: 600, w: 60, h: 20, type: 'spike' },
+          { x: 720, y: 600, w: 60, h: 20, type: 'water' }
+        ]
+      },
+      {
+        name: "C++", hint: "final level",
+        plats: [[0, 620, 1400, 80], [150, 520, 140, 16], [350, 460, 140, 16], [560, 400, 120, 16], [760, 340, 120, 16], [960, 280, 140, 16]],
+        toks: [
+          ["int", 170, 480, 1, 0, Math.random() * Math.PI * 2],
+          ["integer", 250, 480, 0, 0, Math.random() * Math.PI * 2],
+          ["cout<<", 390, 420, 1, 0, Math.random() * Math.PI * 2],
+          ["cout>>", 470, 420, 0, 0, Math.random() * Math.PI * 2],
+          ["for()", 590, 360, 1, 0, Math.random() * Math.PI * 2],
+          ["loop()", 670, 360, 0, 0, Math.random() * Math.PI * 2]
+        ],
+        hazards: [
+          { x: 470, y: 600, w: 60, h: 20, type: 'water' },
+          { x: 870, y: 600, w: 60, h: 20, type: 'lava' }
+        ]
+      }
+    ];
+
+  
+    levels.forEach(level => {
+      if (level.plats.length > 0) {
+        level.plats[0][0] = 0;
+        level.plats[0][2] = W;
+      }
+    });
+
+    let cur = 0, curLevel = null;
+    let paused = false;
+    let time = 0;
+
+
+    const keyState = {};
+    window.addEventListener("keydown", e => { keyState[e.code] = true; canvas.focus(); });
+    window.addEventListener("keyup", e => { keyState[e.code] = false; });
+
+    const mobileKeys = {
+  "p1-left":"KeyA",
+  "p1-jump":"KeyW",
+  "p1-right":"KeyD",
+  "p2-left":"ArrowLeft",
+  "p2-jump":"ArrowUp",
+  "p2-right":"ArrowRight"
+};
+
+Object.keys(mobileKeys).forEach(id=>{
+  const btn=document.getElementById(id);
+  if(!btn) return;
+  btn.addEventListener("touchstart",e=>{
+    e.preventDefault();
+    keyState[mobileKeys[id]]=true;
+  });
+  btn.addEventListener("touchend",e=>{
+    e.preventDefault();
+    keyState[mobileKeys[id]]=false;
+  });
+  btn.addEventListener("mousedown",()=>keyState[mobileKeys[id]]=true);
+  btn.addEventListener("mouseup",()=>keyState[mobileKeys[id]]=false);
+});
+
+    function startLevel(i) {
+    
+      if (typeof i === 'undefined' || i === null) i = cur || 0;
+      cur = i;
+      curLevel = JSON.parse(JSON.stringify(levels[i]));
+     
+      curLevel.toks.forEach(t => { if (typeof t[5] === 'undefined') t[5] = Math.random() * Math.PI * 2; t[4] = 0; });
+   
+      if (curLevel.plats && curLevel.plats.length > 0) curLevel.plats[0][2] = window.innerWidth;
+
+      players.forEach((p, j) => {
+        p.x = startPositions[j].x;
+        p.y = startPositions[j].y;
+        p.vx = 0; p.vy = 0;
+        p.hearts = maxHearts;
+        p.ground = false;
+        p._jumpConsumed = false;
+        p.invuln = 0;
+      });
+      updateHearts();
+      msg.textContent = `Level ${i + 1}: ${curLevel.name} — ${curLevel.hint}`;
+      paused = false;
+      winModal.classList.remove("show");
+      loseModal.classList.remove("show");
+      canvas.focus();
+    }
+
+    function updateHearts() {
+      p1UI.textContent = `P1 ${"❤️".repeat(players[0].hearts)}`;
+      p2UI.textContent = `P2 ${"❤️".repeat(players[1].hearts)}`;
+    }
+
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+    
+      ctx.fillStyle = "#223248";
+      for (const p of curLevel.plats) ctx.fillRect(p[0], p[1], p[2], p[3]);
+
+      for (const h of curLevel.hazards) {
+        if (h.type === 'lava') {
+          ctx.fillStyle = "#b91c1c";
+          ctx.fillRect(h.x, h.y, h.w, h.h);
+          ctx.fillStyle = "#f97316";
+          ctx.fillRect(h.x, h.y + Math.floor(h.h / 3), h.w, Math.floor(h.h / 3));
+        } else if (h.type === 'water') {
+          ctx.fillStyle = "#0ea5e9";
+          ctx.fillRect(h.x, h.y, h.w, h.h);
+          ctx.fillStyle = "#60a5fa";
+          ctx.fillRect(h.x, h.y + Math.floor(h.h / 3), h.w, Math.floor(h.h / 3));
+        } else if (h.type === 'spike') {
+          const spikeW = 12;
+          ctx.fillStyle = "#ef4444";
+          for (let sx = h.x; sx < h.x + h.w; sx += spikeW) {
+            ctx.beginPath();
+            ctx.moveTo(sx, h.y + h.h);
+            ctx.lineTo(sx + spikeW / 2, h.y);
+            ctx.lineTo(sx + spikeW, h.y + h.h);
+            ctx.closePath();
+            ctx.fill();
+          }
+        }
+      }
+
+   
+      ctx.font = "14px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      for (const t of curLevel.toks) {
+        if (t[4]) continue;
+     
+        const phase = t[5] || 0;
+        const amp = 8;
+        const floatY = t[2] + Math.sin(time * 0.06 + phase) * amp;
+    
+        ctx.fillStyle = "rgba(240,240,240,0.06)";
+        ctx.fillRect(t[1] - 44, floatY - 16, 88, 28);
+      
+        ctx.fillStyle = "#f3f4f6";
+        ctx.fillText(t[0], t[1], floatY);
+ 
+        ctx.strokeStyle = "rgba(0,0,0,0.3)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(t[1] - 44, floatY - 16, 88, 28);
+      }
+
+ 
+      for (const p of players) {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+        if (p.invuln > 0) {
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(p.x - 2, p.y - 2, p.w + 4, p.h + 4);
+        }
+      }
+    }
+
+    function respawnPlayer(index) {
+      const p = players[index];
+      p.hearts--;
+      updateHearts();
+      if (p.hearts <= 0) { showLose(); return; }
+      p.x = startPositions[index].x;
+      p.y = startPositions[index].y;
+      p.vx = 0; p.vy = 0;
+      p.invuln = INVULN_FRAMES;
+    }
+
+   
+    function physics(p, index) {
+      if (p.invuln > 0) p.invuln--;
+
+      if (index === 0) { p.left = !!keyState["KeyA"]; p.right = !!keyState["KeyD"]; }
+      else { p.left = !!keyState["ArrowLeft"]; p.right = !!keyState["ArrowRight"]; }
+
+      if (p.left) p.vx = -speed;
+      else if (p.right) p.vx = speed;
+      else p.vx = 0;
+
+      const jumpKey = (index === 0) ? "KeyW" : "ArrowUp";
+      if (keyState[jumpKey]) {
+        if (p.ground && !p._jumpConsumed) {
+          p.vy = jumpPower;
+          p._jumpConsumed = true;
+          p.ground = false;
+        }
+      } else p._jumpConsumed = false;
+
+      p.vy += gravity;
+      p.x += p.vx;
+
+      const steps = Math.max(1, Math.ceil(Math.abs(p.vy)));
+      const stepY = p.vy / steps;
+      for (let s = 0; s < steps; s++) {
+        p.y += stepY;
+        p.ground = false;
+        for (const pl of curLevel.plats) {
+          if (
+            p.x + p.w > pl[0] &&
+            p.x < pl[0] + pl[2] &&
+            p.y + p.h > pl[1] &&
+            p.y + p.h < pl[1] + 20 &&
+            stepY > 0
+          ) {
+            p.y = pl[1] - p.h;
+            p.vy = 0;
+            p.ground = true;
+          }
+        }
+      }
+
+ 
+      if (p.y > H) {
+        if (p.invuln > 0) {
+          p.x = startPositions[index].x;
+          p.y = startPositions[index].y;
+          p.vx = 0; p.vy = 0;
+          return;
+        }
+        respawnPlayer(index);
+        return;
+      }
+
+      if (p.invuln <= 0) {
+        for (const h of curLevel.hazards) {
+          const box = { x: h.x, y: h.y, w: h.w, h: h.h };
+          if (collide(p, box)) {
+            if (h.type === 'spike') {
+      
+              respawnPlayer(index);
+              return;
+            }
+            if (h.type === 'lava') {
+       
+              if (index === 1) {
+                respawnPlayer(index);
+                return;
+              }
+            }
+            if (h.type === 'water') {
+         
+              if (index === 0) {
+                respawnPlayer(index);
+                return;
+              }
+            }
+          }
+        }
+      }
+
+      p.x = clamp(p.x, 0, W - p.w);
+    }
+
+ 
+    function checkTokens() {
+      for (const [pi, p] of players.entries()) {
+        for (const t of curLevel.toks) {
+          if (t[4]) continue;
+       
+          const floatY = t[2] + Math.sin(time * 0.06 + (t[5] || 0)) * 8;
+          const box = { x: t[1] - 44, y: floatY - 16, w: 88, h: 28 };
+          if (collide(p, box)) {
+            t[4] = 1;
+            if (t[3]) {
+            
+              p.hearts = Math.min(maxHearts, p.hearts + 1);
+            } else {
+           
+              if (p.invuln <= 0) {
+                respawnPlayer(pi);
+           
+              }
+            }
+            updateHearts();
+            if (players[pi].hearts <= 0) return;
+          }
+        }
+      }
+    }
+
+    function checkComplete() {
+      const allCorrectCollected = curLevel.toks.filter(x => x[3]).every(x => x[4] === 1);
+      if (allCorrectCollected) showWin();
+    }
+
+    async function showWin() {
+      paused = true;
+      winModal.classList.add("show");
+      canvas.blur();
+
+      if (curLevel.name === "C++") {
+        nextLevelBtn.style.display = "none";
+        restartLevelBtn.style.display = "inline-block";
+
+        const challengeClearedRef = ref(db, `Users/${name}/Challenge Cleared/`);
+
+        await update(challengeClearedRef, {
+          [challengeName]: ""
+        });
+      } else {
+        nextLevelBtn.style.display = "inline-block";
+        restartLevelBtn.style.display = "inline-block";
+      }
+    }
+
+    function showLose() {
+      paused = true;
+      loseModal.classList.add("show");
+      canvas.blur();
+    }
+
+  
+    function loop() {
+      if (!curLevel) return requestAnimationFrame(loop);
+      if (!paused) {
+        time++;
+        for (let i = 0; i < players.length; i++) physics(players[i], i);
+        checkTokens();
+        checkComplete();
+        draw();
+      }
+      requestAnimationFrame(loop);
+    }
+
+   
+    nextLevelBtn.onclick = () => {
+      winModal.classList.remove("show");
+      if (cur < levels.length - 1) startLevel(cur + 1);
+      else startLevel(0);
+    };
+    restartLevelBtn.onclick = () => { winModal.classList.remove("show"); startLevel(cur); };
+    restartOnlyBtn.onclick = () => { loseModal.classList.remove("show"); startLevel(cur); };
+
+   
+    window.addEventListener("load", () => {
+     
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W;
+      canvas.height = H;
+
+     
+      levels.forEach(level => {
+        if (level.plats && level.plats.length > 0) {
+          level.plats[0][0] = 0;
+          level.plats[0][2] = window.innerWidth;
+        }
+      });
+
+    
+      startLevel(0);
+      canvas.focus();
+      loop();
+    });
+
+    window.addEventListener("resize", () => {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W;
+      canvas.height = H;
+
+      
+      levels.forEach(level => {
+        if (level.plats && level.plats.length > 0) {
+          level.plats[0][2] = window.innerWidth;
+        }
+      });
+
+      
+      if (curLevel && curLevel.plats && curLevel.plats.length > 0) {
+        curLevel.plats[0][2] = window.innerWidth;
+      }
+    });
+
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    
+      setTimeout(() => {
+        if (!curLevel) {
+          W = window.innerWidth; H = window.innerHeight;
+          canvas.width = W; canvas.height = H;
+          levels.forEach(level => {
+            if (level.plats && level.plats.length > 0) {
+              level.plats[0][0] = 0;
+              level.plats[0][2] = window.innerWidth;
+            }
+          });
+          startLevel(0);
+          loop();
+        }
+      }, 50);
+    }
+
+   
+    canvas.addEventListener('click', () => canvas.focus());
+
+    quitChallenge.addEventListener('click', function () {
+      window.history.back();
+    });
+
+  </script>
+</body>
+
+</html>
