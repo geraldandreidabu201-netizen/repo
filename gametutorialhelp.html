@@ -1,351 +1,305 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <title>Game Tutorial Help</title>
+<meta charset="UTF-8">
+<title>Game Tutorial Help</title>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<style>
 
-    body {
-      font-family: Arial;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      color: white;
-    }
-
-    .back-arrow {
-      position: absolute;
-      left: 20px;
-      top: 20px;
-      font-size: 2rem;
-      color: #00fff7;
-      text-decoration: none;
-      z-index: 30;
-      transition: transform .18s ease, color .18s ease;
-    }
-
-    .back-arrow:hover {
-      transform: translateX(-6px);
-      color: #fff
-    }
-
-    canvas#bgCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      background: linear-gradient(120deg, #001f3f, #000, #002f4b);
-      background-size: 300% 300%;
-      animation: bgShift 20s ease infinite;
-    }
-
-    @keyframes bgShift {
-      0% {
-        background-position: 0% 50%;
-      }
-
-      50% {
-        background-position: 100% 50%;
-      }
-
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-
-    .help-box {
-      width: 700px;
-      max-width: 95%;
-      background: rgba(0, 0, 0, 0.65);
-      border: 6px solid cyan;
-      border-radius: 20px;
-      padding: 20px;
-      text-align: center;
-      position: relative;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 25px cyan;
-    }
-
-    .help-title {
-      font-size: 40px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-shadow: 0 0 15px cyan;
-    }
-
-    .slide {
-      display: none;
-    }
-
-    .slide.active {
-      display: block;
-    }
-
-    .slide img {
-      width: 100%;
-      max-width: 600px;
-      margin: 10px auto;
-      border-radius: 10px;
-      box-shadow: 0 0 15px cyan;
-    }
-
-    .slide p {
-      font-size: 18px;
-      margin-top: 10px;
-      text-shadow: 0 0 8px cyan;
-    }
-
-    .nav-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 30px;
-      background: #00ffff;
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      cursor: pointer;
-      color: black;
-      box-shadow: 0 0 15px cyan;
-    }
-
-    .prev {
-      left: -70px;
-    }
-
-    .next {
-      right: -70px;
-    }
-
-    .dots {
-      margin-top: 15px;
-    }
-
-    .dot {
-      height: 15px;
-      width: 15px;
-      margin: 5px;
-      background: #666;
-      display: inline-block;
-      border-radius: 50%;
-    }
-
-    .dot.active {
-      background: #00ffff;
-      box-shadow: 0 0 10px cyan;
-    }
-
-    @media (max-width:768px) {
-
-      .help-title {
-        font-size: 28px;
-      }
-
-      .slide p {
-        font-size: 16px;
-      }
-
-      .prev {
-        left: 10px;
-      }
-
-      .next {
-        right: 10px;
-      }
-
-      .nav-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 22px;
-      }
-
-    }
-
-    @media (max-width: 1280px) and (orientation: landscape) and (pointer: coarse){
-
-  .help-box{
-    width:70%;
-    height:80vh;
-    padding:15px;
-  }
-
-  .help-title{
-    font-size:24px;
-  }
-
-  .slide img{
-    width:100%;
-    max-height:45vh;
-    object-fit:contain;
-  }
-
-  .slide p{
-    font-size:14px;
-  }
-
-  .nav-btn{
-    width:35px;
-    height:35px;
-    font-size:18px;
-  }
-
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
-  </style>
+
+body{
+font-family: Arial;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+color:white;
+}
+.back-arrow {
+  position:absolute; left:20px; top:20px;
+  font-size:2rem; color:#00fff7; text-decoration:none; z-index:30;
+  transition:transform .18s ease,color .18s ease;
+}
+.back-arrow:hover{ transform:translateX(-6px); color:#fff }
+
+canvas#bgCanvas{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+z-index:-1;
+background: linear-gradient(120deg,#001f3f,#000,#002f4b);
+background-size:300% 300%;
+animation:bgShift 20s ease infinite;
+}
+
+@keyframes bgShift{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.help-box {
+  width: 90%;
+  max-width: 700px;
+  background: rgba(0, 0, 0, 0.65);
+  border: 6px solid cyan;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 25px cyan;
+  
+}
+
+.help-title{
+font-size:40px;
+font-weight:bold;
+margin-bottom:10px;
+text-shadow:0 0 15px cyan;
+}
+
+.slide{
+display:none;
+}
+
+.slide.active{
+display:block;
+}
+
+.slide img {
+  width: 100%;
+  max-width: 600px;
+  margin: 10px auto;
+  border-radius: 10px;
+  box-shadow: 0 0 15px cyan;
+  display: block;
+  object-fit: contain;
+  max-height: 60vh;
+}
+
+@media (max-width: 768px) {
+  .help-title {
+    font-size: 28px;
+  }
+
+  .slide p {
+    font-size: 16px;
+  }
+
+  .nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 22px;
+  }
+
+  .prev {
+    left: 10px;
+  }
+
+  .next {
+    right: 10px;
+  }
+}
+
+.slide p{
+font-size:18px;
+margin-top:10px;
+text-shadow:0 0 8px cyan;
+}
+
+.nav-btn{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+font-size:30px;
+background:#00ffff;
+border:none;
+border-radius:50%;
+width:50px;
+height:50px;
+cursor:pointer;
+color:black;
+box-shadow:0 0 15px cyan;
+}
+
+.prev{
+left:-70px;
+}
+
+.next{
+right:-70px;
+}
+
+.dots{
+margin-top:15px;
+}
+
+.dot{
+height:15px;
+width:15px;
+margin:5px;
+background:#666;
+display:inline-block;
+border-radius:50%;
+}
+
+.dot.active{
+background:#00ffff;
+box-shadow:0 0 10px cyan;
+}
+
+</style>
 </head>
 
 <body>
-  <a class="back-arrow" href="challenge.html">←</a>
-  <canvas id="bgCanvas"></canvas>
+<a class="back-arrow" href="challenge.html">←</a>
+<canvas id="bgCanvas"></canvas>
 
-  <div class="help-box">
+<div class="help-box">
 
-    <div class="help-title">CHALLENGE MODE</div>
+<div class="help-title">CHALLENGE MODE</div>
 
-    <div class="slide active">
-      <img src="Screenshot (268).png">
+  <div class="slide active">
+      <img src="IMG_20260313_222215_995.jpg">
       <p>Match Battle 1!</p>
     </div>
 
     <div class="slide">
-      <img src="Screenshot (239).png">
+      <img src="IMG_20260313_222212_349.jpg">
       <p>Match Battle 2!</p>
     </div>
 
     <div class="slide">
-      <img src="Screenshot (47).png">
+      <img src="IMG_20260313_222212_080.jpg">
       <p>Code Collector!</p>
     </div>
 
-    <button class="nav-btn prev" onclick="changeSlide(-1)">❮</button>
-    <button class="nav-btn next" onclick="changeSlide(1)">❯</button>
+<button class="nav-btn prev" onclick="changeSlide(-1)">❮</button>
+<button class="nav-btn next" onclick="changeSlide(1)">❯</button>
 
-    <div class="dots">
-      <span class="dot active"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-    </div>
+<div class="dots">
+<span class="dot active"></span>
+<span class="dot"></span>
+<span class="dot"></span>
+</div>
 
-  </div>
+</div>
 
-  <script>
-    if (localStorage.getItem('loggedIn') == null) {
-      window.location.href = 'login.html';
-    }
-    let slideIndex = 0;
+<script>
+if (localStorage.getItem('loggedIn') == null) {
+  window.location.href = 'login.html';
+}
+let slideIndex = 0;
 
-    const slides = document.querySelectorAll(".slide");
-    const dots = document.querySelectorAll(".dot");
+const slides = document.querySelectorAll(".slide");
+const dots = document.querySelectorAll(".dot");
 
-    function showSlide(index) {
+function showSlide(index){
 
-      slides.forEach(slide => slide.classList.remove("active"));
-      dots.forEach(dot => dot.classList.remove("active"));
+slides.forEach(slide => slide.classList.remove("active"));
+dots.forEach(dot => dot.classList.remove("active"));
 
-      slides[index].classList.add("active");
-      dots[index].classList.add("active");
+slides[index].classList.add("active");
+dots[index].classList.add("active");
 
-    }
+}
 
-    function changeSlide(n) {
+function changeSlide(n){
 
-      slideIndex += n;
+slideIndex += n;
 
-      if (slideIndex >= slides.length) {
-        slideIndex = 0;
-      }
+if(slideIndex >= slides.length){
+slideIndex = 0;
+}
 
-      if (slideIndex < 0) {
-        slideIndex = slides.length - 1;
-      }
+if(slideIndex < 0){
+slideIndex = slides.length - 1;
+}
 
-      showSlide(slideIndex);
+showSlide(slideIndex);
 
-    }
+}
 
 
-    const canvas = document.getElementById("bgCanvas");
-    const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("bgCanvas");
+const ctx = canvas.getContext("2d");
 
-    let particles = [];
+let particles = [];
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
+function resizeCanvas(){
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+}
 
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+window.addEventListener("resize",resizeCanvas);
+resizeCanvas();
 
-    class Particle {
+class Particle{
 
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 3 + 1;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.speedY = (Math.random() - 0.5) * 0.5;
-        this.color = `hsl(${Math.random() * 60 + 180},100%,50%)`;
-      }
+constructor(){
+this.x = Math.random()*canvas.width;
+this.y = Math.random()*canvas.height;
+this.size = Math.random()*3+1;
+this.speedX = (Math.random()-0.5)*0.5;
+this.speedY = (Math.random()-0.5)*0.5;
+this.color = `hsl(${Math.random()*60+180},100%,50%)`;
+}
 
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
+update(){
+this.x += this.speedX;
+this.y += this.speedY;
 
-        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-      }
+if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+}
 
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.shadowColor = this.color;
-        ctx.shadowBlur = 20;
-        ctx.fillStyle = this.color;
-        ctx.fill();
-      }
+draw(){
+ctx.beginPath();
+ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+ctx.shadowColor = this.color;
+ctx.shadowBlur = 20;
+ctx.fillStyle = this.color;
+ctx.fill();
+}
 
-    }
+}
 
-    function initParticles() {
+function initParticles(){
 
-      particles = [];
+particles = [];
 
-      for (let i = 0; i < 80; i++) {
-        particles.push(new Particle());
-      }
+for(let i=0;i<80;i++){
+particles.push(new Particle());
+}
 
-    }
+}
 
-    function animate() {
+function animate(){
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.clearRect(0,0,canvas.width,canvas.height);
 
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
+particles.forEach(p=>{
+p.update();
+p.draw();
+});
 
-      requestAnimationFrame(animate);
+requestAnimationFrame(animate);
 
-    }
+}
 
-    initParticles();
-    animate();
+initParticles();
+animate();
 
-  </script>
+</script>
 
 </body>
-
 </html>
