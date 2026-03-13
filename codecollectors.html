@@ -187,10 +187,10 @@
     </div>
   </div>
 
-  <div class="modal" id="rotateModal">
+<div class="modal" id="rotateModal">
   <div class="modal-content">
     <h2>📱 Rotate Device</h2>
-    <p>Please rotate your device to <b>landscape</b> to play.</p>
+    <p>Please use <b>landscape mode</b> to play.</p>
   </div>
 </div>
 
@@ -760,27 +760,20 @@
     quitChallenge.addEventListener('click', function () {
       window.history.back();
     });
+const rotateModal = document.getElementById("rotateModal")
 
-    const rotateModal = document.getElementById("rotateModal");
-
-function checkOrientation() {
-
-  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
-  const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-
-  if (isTouchDevice && isPortrait) {
-    rotateModal.classList.add("show");
-    paused = true; // pause game
+function checkScreen() {
+  if (window.innerHeight > window.innerWidth && window.innerWidth <= 1280) {
+    rotateModal.classList.add("show")
+    paused = true
   } else {
-    rotateModal.classList.remove("show");
-    paused = false;
+    rotateModal.classList.remove("show")
+    paused = false
   }
-
 }
 
-window.addEventListener("resize", checkOrientation);
-window.addEventListener("orientationchange", checkOrientation);
-window.addEventListener("load", checkOrientation);
+checkScreen()
+window.addEventListener("resize", checkScreen)
   </script>
 </body>
 
