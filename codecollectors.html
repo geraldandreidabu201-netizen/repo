@@ -187,6 +187,13 @@
     </div>
   </div>
 
+  <div class="modal" id="rotateModal">
+  <div class="modal-content">
+    <h2>📱 Rotate Device</h2>
+    <p>Please rotate your device to <b>landscape</b> to play.</p>
+  </div>
+</div>
+
   <div class="mobile-controls">
     <button id="p1-left">◀</button>
     <button id="p1-jump">▲</button>
@@ -754,6 +761,26 @@
       window.history.back();
     });
 
+    const rotateModal = document.getElementById("rotateModal");
+
+function checkOrientation() {
+
+  const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+  const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+
+  if (isTouchDevice && isPortrait) {
+    rotateModal.classList.add("show");
+    paused = true; // pause game
+  } else {
+    rotateModal.classList.remove("show");
+    paused = false;
+  }
+
+}
+
+window.addEventListener("resize", checkOrientation);
+window.addEventListener("orientationchange", checkOrientation);
+window.addEventListener("load", checkOrientation);
   </script>
 </body>
 
