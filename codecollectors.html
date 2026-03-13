@@ -111,7 +111,7 @@
     }
 
 
-    @media (max-width: 3000px) {
+    @media (max-width: 1024px) and (max-height: 1300px){
       .mobile-controls {
         display: flex;
       }
@@ -136,11 +136,28 @@
         display: none;
       }
     }
+
+    .back-arrow {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      font-size: 2rem;
+      color: #00fff7;
+      text-decoration: none;
+      z-index: 30;
+      transition: transform .18s ease, color .18s ease;
+    }
+
+    .back-arrow:hover {
+      transform: translateX(-6px);
+      color: #fff
+    }
   </style>
 </head>
 
 <body>
   <canvas id="game" tabindex="0"></canvas>
+  <a class="back-arrow" href="challenge.html">←</a>
 
   <div class="ui">
     <div class="box" id="p1hearts">P1 ❤️❤️❤️❤️❤️</div>
@@ -251,11 +268,11 @@
           ["<h7>", 1280, 320, 0, 0, Math.random() * Math.PI * 2]
         ],
 
-hazards: [ 
-  { x: 440, y: 600, w: 60, h: 20, type: 'lava' }, 
-  { x: 720, y: 600, w: 60, h: 20, type: 'spike' }, 
-  { x: 980, y: 600, w: 60, h: 20, type: 'water' } 
-]
+        hazards: [
+          { x: 440, y: 600, w: 60, h: 20, type: 'lava' },
+          { x: 720, y: 600, w: 60, h: 20, type: 'spike' },
+          { x: 980, y: 600, w: 60, h: 20, type: 'water' }
+        ]
 
       },
       {
@@ -270,9 +287,9 @@ hazards: [
           ["#idd", 980, 310, 0, 0, Math.random() * Math.PI * 2]
         ],
 
-        hazards: [ 
-          { x: 470, y: 600, w: 60, h: 20, type: 'spike' }, 
-          { x: 860, y: 600, w: 60, h: 20, type: 'lava' } 
+        hazards: [
+          { x: 470, y: 600, w: 60, h: 20, type: 'spike' },
+          { x: 860, y: 600, w: 60, h: 20, type: 'lava' }
         ]
 
       },
@@ -287,10 +304,10 @@ hazards: [
           ["if()", 720, 360, 1, 0, Math.random() * Math.PI * 2],
           ["iff()", 860, 440, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [ 
-          { x: 310, y: 600, w: 60, h: 20, type: 'water' }, 
-          { x: 510, y: 600, w: 60, h: 20, type: 'spike' }, 
-          { x: 910, y: 600, w: 60, h: 20, type: 'lava' } 
+        hazards: [
+          { x: 310, y: 600, w: 60, h: 20, type: 'water' },
+          { x: 510, y: 600, w: 60, h: 20, type: 'spike' },
+          { x: 910, y: 600, w: 60, h: 20, type: 'lava' }
         ]
 
       },
@@ -303,9 +320,9 @@ hazards: [
           ["<?php", 920, 400, 1, 0, Math.random() * Math.PI * 2],
           ["<php", 980, 400, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [ 
-          { x: 500, y: 600, w: 60, h: 20, type: 'lava' }, 
-          { x: 740, y: 600, w: 60, h: 20, type: 'water' } 
+        hazards: [
+          { x: 500, y: 600, w: 60, h: 20, type: 'lava' },
+          { x: 740, y: 600, w: 60, h: 20, type: 'water' }
         ]
 
       },
@@ -320,9 +337,9 @@ hazards: [
           ["for", 860, 280, 1, 0, Math.random() * Math.PI * 2],
           ["foreach", 940, 600, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [ 
-          { x: 420, y: 600, w: 60, h: 20, type: 'spike' }, 
-          { x: 720, y: 600, w: 60, h: 20, type: 'water' } 
+        hazards: [
+          { x: 420, y: 600, w: 60, h: 20, type: 'spike' },
+          { x: 720, y: 600, w: 60, h: 20, type: 'water' }
         ]
 
       },
@@ -337,9 +354,9 @@ hazards: [
           ["for()", 590, 360, 1, 0, Math.random() * Math.PI * 2],
           ["loop()", 670, 600, 0, 0, Math.random() * Math.PI * 2]
         ],
-        hazards: [ 
-          { x: 470, y: 600, w: 60, h: 20, type: 'water' }, 
-          { x: 870, y: 600, w: 60, h: 20, type: 'lava' } 
+        hazards: [
+          { x: 470, y: 600, w: 60, h: 20, type: 'water' },
+          { x: 870, y: 600, w: 60, h: 20, type: 'lava' }
         ]
 
       }
@@ -424,86 +441,86 @@ hazards: [
 
 
     function draw() {
-  ctx.clearRect(0, 0, W, H);
-
- 
-  
-  ctx.fillStyle = "#223248";
-  for (const p of curLevel.plats) {
-    ctx.fillRect(p[0] * scaleX, (p[1] - 120) * scaleY, p[2] * scaleX, p[3] * scaleY);
-  }
-
- 
-  
-  for (const h of curLevel.hazards) { 
-    if (h.type === 'lava') { 
-      ctx.fillStyle = "#b91c1c"; 
-      ctx.fillRect(h.x * scaleX, (h.y - 120) * scaleY, h.w * scaleX, h.h * scaleY);
-
-     
-    } 
-    else if (h.type === 'water') { 
-      ctx.fillStyle = "#0ea5e9"; 
-      ctx.fillRect(h.x * scaleX, (h.y - 120) * scaleY, h.w * scaleX, h.h * scaleY);
-
-     
-    } 
-    else if (h.type === 'spike') { 
-      const spikeW = 12; 
-      ctx.fillStyle = "#ef4444"; 
-
-      for (let sx = h.x; sx < h.x + h.w; sx += spikeW) { 
-        ctx.beginPath(); 
-    ctx.moveTo(sx * scaleX, (h.y + h.h - 120) * scaleY);
-ctx.lineTo((sx + spikeW / 2) * scaleX, (h.y - 120) * scaleY);
-ctx.lineTo((sx + spikeW) * scaleX, (h.y + h.h - 120) * scaleY);
-        ctx.closePath(); 
-        ctx.fill(); 
-      } 
-    } 
-  }
-
-  
-  
-  ctx.font = "14px monospace";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  for (const t of curLevel.toks) {
-    if (t[4]) continue;
-
-    const phase = t[5] || 0;
-    const amp = 8;
-    const floatY = t[2] + Math.sin(time * 0.06 + phase) * amp;
-
-    ctx.fillStyle = "rgba(240,240,240,0.06)";
-   ctx.fillRect((t[1] - 44) * scaleX, (floatY - 16 - 120) * scaleY, 88 * scaleX, 28 * scaleY);
-
-    ctx.fillStyle = "#f3f4f6";
-   ctx.fillText(t[0], t[1] * scaleX, (floatY - 120) * scaleY);
-
-    ctx.strokeStyle = "rgba(0,0,0,0.3)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect((t[1] - 44) * scaleX, (floatY - 16 - 120) * scaleY, 88 * scaleX, 28 * scaleY);
-  }
+      ctx.clearRect(0, 0, W, H);
 
 
-  
-  for (const p of players) {
-    ctx.fillStyle = p.color;
-    ctx.fillRect(p.x * scaleX, (p.y - 120) * scaleY, p.w * scaleX, p.h * scaleY);
 
-    if (p.invuln > 0) {
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        (p.x - 2) * scaleX,
-        (p.y - 120 - 2) * scaleY,
-        (p.w + 4) * scaleX,
-        (p.h + 4) * scaleY
-      );
+      ctx.fillStyle = "#223248";
+      for (const p of curLevel.plats) {
+        ctx.fillRect(p[0] * scaleX, (p[1] - 120) * scaleY, p[2] * scaleX, p[3] * scaleY);
+      }
+
+
+
+      for (const h of curLevel.hazards) {
+        if (h.type === 'lava') {
+          ctx.fillStyle = "#b91c1c";
+          ctx.fillRect(h.x * scaleX, (h.y - 120) * scaleY, h.w * scaleX, h.h * scaleY);
+
+
+        }
+        else if (h.type === 'water') {
+          ctx.fillStyle = "#0ea5e9";
+          ctx.fillRect(h.x * scaleX, (h.y - 120) * scaleY, h.w * scaleX, h.h * scaleY);
+
+
+        }
+        else if (h.type === 'spike') {
+          const spikeW = 12;
+          ctx.fillStyle = "#ef4444";
+
+          for (let sx = h.x; sx < h.x + h.w; sx += spikeW) {
+            ctx.beginPath();
+            ctx.moveTo(sx * scaleX, (h.y + h.h - 120) * scaleY);
+            ctx.lineTo((sx + spikeW / 2) * scaleX, (h.y - 120) * scaleY);
+            ctx.lineTo((sx + spikeW) * scaleX, (h.y + h.h - 120) * scaleY);
+            ctx.closePath();
+            ctx.fill();
+          }
+        }
+      }
+
+
+
+      ctx.font = "14px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      for (const t of curLevel.toks) {
+        if (t[4]) continue;
+
+        const phase = t[5] || 0;
+        const amp = 8;
+        const floatY = t[2] + Math.sin(time * 0.06 + phase) * amp;
+
+        ctx.fillStyle = "rgba(240,240,240,0.06)";
+        ctx.fillRect((t[1] - 44) * scaleX, (floatY - 16 - 120) * scaleY, 88 * scaleX, 28 * scaleY);
+
+        ctx.fillStyle = "#f3f4f6";
+        ctx.fillText(t[0], t[1] * scaleX, (floatY - 120) * scaleY);
+
+        ctx.strokeStyle = "rgba(0,0,0,0.3)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect((t[1] - 44) * scaleX, (floatY - 16 - 120) * scaleY, 88 * scaleX, 28 * scaleY);
+      }
+
+
+
+      for (const p of players) {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x * scaleX, (p.y - 120) * scaleY, p.w * scaleX, p.h * scaleY);
+
+        if (p.invuln > 0) {
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(
+            (p.x - 2) * scaleX,
+            (p.y - 120 - 2) * scaleY,
+            (p.w + 4) * scaleX,
+            (p.h + 4) * scaleY
+          );
+        }
+      }
     }
-  }
-}
 
     function respawnPlayer(index) {
       const p = players[index];
@@ -559,36 +576,30 @@ ctx.lineTo((sx + spikeW) * scaleX, (h.y + h.h - 120) * scaleY);
         }
       }
 
-      if (p.invuln <= 0) 
-      { 
-        for (const h of curLevel.hazards) 
-        { 
-          const box = { x: h.x, y: h.y, w: h.w, h: h.h }; 
-          if (collide(p, box)) { if (h.type === 'spike') 
-          { 
-            respawnPlayer(index); 
-            return; 
+      if (p.invuln <= 0) {
+        for (const h of curLevel.hazards) {
+          const box = { x: h.x, y: h.y, w: h.w, h: h.h };
+          if (collide(p, box)) {
+            if (h.type === 'spike') {
+              respawnPlayer(index);
+              return;
 
-          } 
-          if (h.type === 'lava') 
-          { 
-            if (index === 1) 
-            { 
-              respawnPlayer(index); 
-              return; 
-            } 
-          } 
-          if (h.type === 'water') 
-          { 
-            if (index === 0) 
-            { 
-              respawnPlayer(index); 
-              return; 
-            } 
-          } 
-        } 
-      } 
-    }
+            }
+            if (h.type === 'lava') {
+              if (index === 1) {
+                respawnPlayer(index);
+                return;
+              }
+            }
+            if (h.type === 'water') {
+              if (index === 0) {
+                respawnPlayer(index);
+                return;
+              }
+            }
+          }
+        }
+      }
 
 
 
