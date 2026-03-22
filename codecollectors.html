@@ -203,8 +203,18 @@
     <button id="p2-right">▶</button>
   </div>
 
+<audio id="correctSound" src="https://cdn.freesound.org/previews/66/66717_931655-lq.mp3"></audio>
+<audio id="wrongSound" src="https://cdn.freesound.org/previews/331/331912_3248244-lq.mp3"></audio>
+
   <script type="module">
     import { db, ref, update } from './Connection-external-firebase.js';
+
+    const correctSound = document.getElementById('correctSound');
+const wrongSound = document.getElementById('wrongSound');
+
+correctSound.volume = 0.4;
+wrongSound.volume = 0.1;
+
     let challengeName = "Code Collectors";
 
     if (localStorage.getItem('loggedIn') == null) {
@@ -588,18 +598,21 @@
           const box = { x: h.x, y: h.y, w: h.w, h: h.h };
           if (collide(p, box)) {
             if (h.type === 'spike') {
+              wrongSound.play();
               respawnPlayer(index);
               return;
 
             }
             if (h.type === 'lava') {
               if (index === 1) {
+                wrongSound.play();
                 respawnPlayer(index);
                 return;
               }
             }
             if (h.type === 'water') {
               if (index === 0) {
+                wrongSound.play();
                 respawnPlayer(index);
                 return;
               }
@@ -625,10 +638,10 @@
           if (collide(p, box)) {
             t[4] = 1;
             if (t[3]) {
-
+correctSound.play();
               p.hearts = Math.min(maxHearts, p.hearts + 1);
             } else {
-
+wrongSound.play();
               if (p.invuln <= 0) {
                 respawnPlayer(pi);
 
@@ -763,7 +776,7 @@
 const rotateModal = document.getElementById("rotateModal")
 
 function checkScreen() {
-  if (window.innerHeight > window.innerWidth && window.innerWidth <= 1280) {
+  if (window.innerHeight > window.innerWidth && window.innerWidth <= 2000) {
     rotateModal.classList.add("show")
     paused = true
   } else {
